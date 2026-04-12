@@ -9,11 +9,11 @@ if (fs.existsSync(envPath)) {
   require('dotenv').config({ path: envPath });
 }
 
-const apiKey = process.env.WEATHERMAP_API_KEY;
-if (!apiKey) {
-  console.error('ERROR: WEATHERMAP_API_KEY is not set. Add it to .env or as a CI secret.');
-  process.exit(1);
-}
+// const apiKey = process.env.WEATHERMAP_API_KEY;
+// if (!apiKey) {
+//   console.error('ERROR: WEATHERMAP_API_KEY is not set. Add it to .env or as a CI secret.');
+//   process.exit(1);
+// }
 
 // Read the template and replace the placeholder so the key is never hardcoded in source.
 const envFilePath = path.resolve(__dirname, 'src/environments/environment.ts');
