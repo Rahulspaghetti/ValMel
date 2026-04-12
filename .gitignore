@@ -14,6 +14,9 @@ out/
 # Angular cache (leftover)
 .angular/
 
+# Claude
+.claude/
+
 # IDE
 .vscode/
 .idea/
