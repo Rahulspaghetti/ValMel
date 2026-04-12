@@ -1,0 +1,85 @@
+<app-shooting-stars aria-hidden="true"></app-shooting-stars>
+
+<div class="flowers" aria-hidden="true">
+  <span class="flower f1"></span>
+  <span class="flower f2"></span>
+  <span class="flower f3"></span>
+  <span class="flower f4"></span>
+  <span class="flower f5"></span>
+  <span class="flower f6"></span>
+</div>
+
+<div class="page">
+
+  <header class="header">
+    <h1 class="title">MeliBoo</h1>
+    <p class="subtitle">just for you</p>
+  </header>
+
+  <main class="cards">
+
+    <!-- Bible Quote -->
+    <article class="card bible-card">
+      <span class="card-glyph">✦</span>
+      <h2 class="card-label">Today's Word</h2>
+
+      @if (bibleLoading()) {
+        <div class="skeleton">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      } @else if (bibleError()) {
+        <p class="error-text">Could not load verse</p>
+        <button class="retry" (click)="loadBibleVerse()">Try again</button>
+      } @else {
+        <blockquote class="verse">
+          <p class="verse-text">{{ bibleVerse()?.text }}</p>
+          <cite class="verse-ref">{{ bibleVerse()?.reference }}</cite>
+        </blockquote>
+      }
+    </article>
+
+    <!-- Weather -->
+    <article class="card weather-card">
+      <span class="card-glyph">☁</span>
+      <h2 class="card-label">Right Now</h2>
+
+      @if (weatherLoading()) {
+        <div class="skeleton">
+          <div class="skeleton-line short center"></div>
+          <div class="skeleton-line short center"></div>
+          <div class="skeleton-line shorter center"></div>
+        </div>
+      } @else if (weatherError()) {
+        @if (weatherError() === 'location') {
+          <p class="error-text">Location access was denied.<br>Allow it in your browser and retry.</p>
+        } @else {
+          <p class="error-text">Weather API error.<br>Check your API key in environment.ts.</p>
+        }
+        <button class="retry" (click)="loadWeather()">Try again</button>
+      } @else {
+        <div class="weather-body">
+          <img class="weather-icon" [src]="weather()!.icon" [alt]="weather()!.description" />
+          <div class="temp">{{ weather()!.temperature }}<span class="deg">°C</span></div>
+          <div class="city">{{ weather()!.city }}</div>
+          <div class="desc">{{ weather()!.description }}</div>
+          <div class="feels">feels like {{ weather()!.feelsLike }}°C</div>
+        </div>
+      }
+    </article>
+
+    <!-- Cute Message -->
+    <article class="card message-card">
+      <span class="card-glyph">♡</span>
+      <h2 class="card-label">A Little Note</h2>
+      <p class="message-text">{{ cuteMessage() }}</p>
+    </article>
+
+  </main>
+
+  <footer class="footer">
+    <p>Made for you by Ra(h)ul </p>
+  </footer>
+
+</div>
