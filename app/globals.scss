@@ -11,12 +11,14 @@
   --border:          #fce8ef;
   --shadow:          rgba(232, 130, 154, 0.10);
   --shadow-hover:    rgba(232, 130, 154, 0.22);
+  --font-playfair:   'Playfair Display', serif;
+  --font-lato:       'Lato', sans-serif;
 }
 
 html,
 body {
   height: 100%;
-  font-family: 'Lato', sans-serif;
+  font-family: var(--font-lato), 'Lato', sans-serif;
   background: linear-gradient(160deg, #f0d9e2 0%, #f5e2ea 60%, #ecdaf5 100%);
   background-attachment: fixed;
   color: var(--color-primary);
