@@ -26,6 +26,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   showIntro = signal(true);
   musicPlaying = signal(false);
+  greetingText = signal('');
+  greetingEmoji = signal('');
 
   private midnightTimer: ReturnType<typeof setTimeout> | null = null;
   private musicTimer: ReturnType<typeof setTimeout> | null = null;
@@ -33,12 +35,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   dismissIntro(): void {
     this.showIntro.set(false);
-    this.audio = new Audio('assets/music.mp3');
-    this.audio.loop = true;
-    this.audio.volume = 0.5;
-    this.musicTimer = setTimeout(() => {
-      this.audio!.play().then(() => this.musicPlaying.set(true)).catch(() => {});
-    }, 5000);
+    if (!this.audio) return;
+    this.audio.play().then(() => this.musicPlaying.set(true)).catch(() => {});
   }
 
   toggleMusic(): void {
@@ -51,7 +49,19 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setGreeting(): void {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12)  { this.greetingText.set('Good Morning');            this.greetingEmoji.set('☀️'); }
+    else if (hour >= 12 && hour < 17) { this.greetingText.set('Good Afternoon');     this.greetingEmoji.set('🌸'); }
+    else if (hour >= 17 && hour < 21) { this.greetingText.set('Good Evening');       this.greetingEmoji.set('🌅'); }
+    else                              { this.greetingText.set('Goodnight mi chula reina'); this.greetingEmoji.set('🌙'); }
+  }
+
   ngOnInit(): void {
+    this.setGreeting();
+    this.audio = new Audio('assets/music.mp3');
+    this.audio.loop = true;
+    this.audio.volume = 0.5;
     this.cuteMessage.set(this.cuteMessageService.getMessage());
     this.scheduleMidnightRefresh();
     this.loadBibleVerse();

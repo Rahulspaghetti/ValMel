@@ -2,6 +2,7 @@
 @if (showIntro()) {
   <div class="intro-overlay" (click)="dismissIntro()">
     <div class="intro-box">
+      <p class="intro-greeting">{{ greetingText() }} <span class="emoji">{{ greetingEmoji() }}</span></p>
       <p class="intro-title">MeliBoo</p>
       <p class="intro-hint">tap to open ✦</p>
     </div>
