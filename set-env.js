@@ -15,11 +15,18 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const content = `export const environment = {
-  production: false,
-  openWeatherMapApiKey: '${apiKey}',
-};
-`;
+// Read the template and replace the placeholder so the key is never hardcoded in source.
+const envFilePath = path.resolve(__dirname, 'src/environments/environment.ts');
+let content = fs.readFileSync(envFilePath, 'utf8');
 
-fs.writeFileSync('src/environments/environment.ts', content);
+if (!content.includes('WEATHERMAP_API_KEY_PLACEHOLDER')) {
+  console.error(
+    'ERROR: environment.ts does not contain WEATHERMAP_API_KEY_PLACEHOLDER. ' +
+    'Restore the placeholder before building.'
+  );
+  process.exit(1);
+}
+
+content = content.replace('WEATHERMAP_API_KEY_PLACEHOLDER', apiKey);
+fs.writeFileSync(envFilePath, content);
 console.log('environment.ts written with API key.');
