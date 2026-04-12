@@ -11,6 +11,9 @@ yarn-error.log
 .next/
 out/
 
+# Angular cache (leftover)
+.angular/
+
 # IDE
 .vscode/
 .idea/
