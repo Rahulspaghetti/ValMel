@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "deploy": "ng build --base-href /ValMel/ && npx angular-cli-ghpages --dir=dist/valmel/browser"
+    "set-env": "node set-env.js",
+    "start": "npm run set-env && ng serve",
+    "build": "npm run set-env && ng build",
+    "deploy": "npm run set-env && ng build --base-href /ValMel/ && npx angular-cli-ghpages --dir=dist/valmel/browser"
   },
   "dependencies": {
     "@angular/animations": "^21.0.0",
@@ -26,6 +27,7 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "angular-cli-ghpages": "^3.0.2",
+    "dotenv": "^17.4.1",
     "typescript": "~5.9.0"
   }
 }

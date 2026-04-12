@@ -2,12 +2,10 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { BibleService, BibleVerse } from './services/bible.service';
 import { WeatherService, WeatherData, WeatherError } from './services/weather.service';
 import { CuteMessageService } from './services/cute-message.service';
-import { ShootingStarsComponent } from './shooting-stars/shooting-stars.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ShootingStarsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
