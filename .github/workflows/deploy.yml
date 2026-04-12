@@ -21,10 +21,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Inject API key
+        run: |
+          sed -i "s|openWeatherMapApiKey: '.*'|openWeatherMapApiKey: '${{ secrets.WEATHERMAP_API_KEY }}'|" src/environments/environment.ts
+
       - name: Build
-        run: npm run build -- --base-href /ValMel/
-        env:
-          WEATHERMAP_API_KEY: ${{ secrets.WEATHERMAP_API_KEY }}
+        run: npx ng build --base-href /ValMel/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
