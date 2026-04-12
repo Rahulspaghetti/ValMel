@@ -1,4 +1,19 @@
 
+@if (showIntro()) {
+  <div class="intro-overlay" (click)="dismissIntro()">
+    <div class="intro-box">
+      <p class="intro-title">MeliBoo</p>
+      <p class="intro-hint">tap to open ✦</p>
+    </div>
+  </div>
+}
+
+@if (!showIntro()) {
+  <button class="music-btn" (click)="toggleMusic()" [title]="musicPlaying() ? 'Pause music' : 'Play music'">
+    {{ musicPlaying() ? '♪' : '♩' }}
+  </button>
+}
+
 <div class="flowers" aria-hidden="true">
   <span class="flower f1"></span>
   <span class="flower f2"></span>

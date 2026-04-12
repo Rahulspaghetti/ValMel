@@ -254,6 +254,74 @@
   &:hover { opacity: 0.7; }
 }
 
+// ── Intro overlay ────────────────────────────────────────
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #fce8ef 0%, #fff0f5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.intro-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(3rem, 10vw, 5rem);
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .intro-hint {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 1.1rem;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+// ── Music toggle button ───────────────────────────────────
+.music-btn {
+  position: fixed;
+  bottom: 1.8rem;
+  right: 1.8rem;
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--color-accent);
+  font-size: 1.4rem;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 22px var(--shadow-hover);
+  }
+}
+
 // ── Footer ───────────────────────────────────────────────
 .footer {
   margin-top: auto;

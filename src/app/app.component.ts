@@ -24,7 +24,32 @@ export class AppComponent implements OnInit, OnDestroy {
 
   cuteMessage = signal('');
 
+  showIntro = signal(true);
+  musicPlaying = signal(false);
+
   private midnightTimer: ReturnType<typeof setTimeout> | null = null;
+  private musicTimer: ReturnType<typeof setTimeout> | null = null;
+  private audio: HTMLAudioElement | null = null;
+
+  dismissIntro(): void {
+    this.showIntro.set(false);
+    this.audio = new Audio('assets/music.mp3');
+    this.audio.loop = true;
+    this.audio.volume = 0.5;
+    this.musicTimer = setTimeout(() => {
+      this.audio!.play().then(() => this.musicPlaying.set(true)).catch(() => {});
+    }, 5000);
+  }
+
+  toggleMusic(): void {
+    if (!this.audio) return;
+    if (this.musicPlaying()) {
+      this.audio.pause();
+      this.musicPlaying.set(false);
+    } else {
+      this.audio.play().then(() => this.musicPlaying.set(true)).catch(() => {});
+    }
+  }
 
   ngOnInit(): void {
     this.cuteMessage.set(this.cuteMessageService.getMessage());
@@ -34,9 +59,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.midnightTimer !== null) {
-      clearTimeout(this.midnightTimer);
-    }
+    if (this.midnightTimer !== null) clearTimeout(this.midnightTimer);
+    if (this.musicTimer !== null) clearTimeout(this.musicTimer);
+    this.audio?.pause();
   }
 
   private scheduleMidnightRefresh(): void {
