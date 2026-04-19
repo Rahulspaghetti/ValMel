@@ -290,7 +290,7 @@ export default function AgentPage() {
               <textarea
                 ref={textareaRef}
                 className={styles.textarea}
-                placeholder="Ask me a law question, Miss Melissa Villagrand… (Shift+Enter for newline)"
+                placeholder="Ask me a law question, Miss Melissa Villagran… (Shift+Enter for newline)"
                 value={intent}
                 onChange={(e) => setIntent(e.target.value)}
                 onInput={handleTextareaInput}
