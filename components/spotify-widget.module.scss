@@ -1,0 +1,107 @@
+.widget {
+  display        : flex;
+  align-items    : center;
+  gap            : 10px;
+  padding        : 10px 12px;
+  border-radius  : 18px;
+  background     : var(--card-bg);
+  border         : 1px solid var(--border);
+  box-shadow     : 0 4px 20px var(--shadow);
+  max-width      : 240px;
+  overflow       : hidden;
+  transition     : max-width 0.2s ease, padding 0.2s ease, background 0.3s ease;
+  backdrop-filter: blur(12px);
+}
+
+.collapsed {
+  width    : 76px;
+  max-width: 76px;
+  min-width: 76px;
+  padding  : 8px 11px;
+}
+
+.connectBtn {
+  display        : flex;
+  align-items    : center;
+  gap            : 6px;
+  font-family    : var(--font-lato), 'Lato', sans-serif;
+  font-size      : 0.78rem;
+  font-weight    : 500;
+  color          : var(--color-accent);
+  text-decoration: none;
+  white-space    : nowrap;
+}
+
+.albumArt {
+  width        : 40px;
+  height       : 40px;
+  border-radius: 8px;
+  object-fit   : cover;
+  flex-shrink  : 0;
+}
+
+.musicIcon {
+  width          : 40px;
+  height         : 40px;
+  border-radius  : 10px;
+  background     : var(--frosted);
+  border         : 1px solid var(--border);
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  flex-shrink    : 0;
+  color          : var(--color-accent);
+}
+
+.info {
+  flex          : 1;
+  display       : flex;
+  flex-direction: column;
+  gap           : 2px;
+  min-width     : 0;
+}
+
+.trackName {
+  font-size    : 0.78rem;
+  font-family  : var(--font-lato), 'Lato', sans-serif;
+  color        : var(--color-primary);
+  white-space  : nowrap;
+  overflow     : hidden;
+  text-overflow: ellipsis;
+  font-weight  : 500;
+}
+
+.artist {
+  font-size    : 0.68rem;
+  color        : var(--color-secondary);
+  opacity      : 0.65;
+  white-space  : nowrap;
+  overflow     : hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display    : flex;
+  align-items: center;
+  gap        : 2px;
+  flex-shrink: 0;
+}
+
+.ctrl {
+  width          : 26px;
+  height         : 26px;
+  border-radius  : 50%;
+  border         : none;
+  background     : transparent;
+  color          : var(--color-accent);
+  font-size      : 1rem;
+  cursor         : pointer;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  padding        : 0;
+  transition     : background 0.15s;
+
+  &:hover    { background: var(--frosted); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
