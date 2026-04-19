@@ -1,14 +1,21 @@
 # Environment secrets
 .env
+.env.local
 
 # Node
 node_modules/
 npm-debug.log
 yarn-error.log
 
-# Angular
-dist/
+# Next.js
+.next/
+out/
+
+# Angular cache (leftover)
 .angular/
+
+# Claude
+.claude/
 
 # IDE
 .vscode/
