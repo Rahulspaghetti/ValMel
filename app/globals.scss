@@ -11,17 +11,41 @@
   --border:          #fce8ef;
   --shadow:          rgba(232, 130, 154, 0.10);
   --shadow-hover:    rgba(232, 130, 154, 0.22);
+  --frosted:         rgba(232, 130, 154, 0.08);
+  --frosted-hover:   rgba(232, 130, 154, 0.16);
+  --bg-start:        #f0d9e2;
+  --bg-mid:          #f5e2ea;
+  --bg-end:          #ecdaf5;
+  --card-bg:         #ffffff;
+  --card-bg-glass:   rgba(255, 255, 255, 0.72);
   --font-playfair:   'Playfair Display', serif;
   --font-lato:       'Lato', sans-serif;
+}
+
+.dark {
+  --color-primary:   #f2d5e4;
+  --color-secondary: #c8909f;
+  --color-accent:    #e8829a;
+  --border:          #3d1f2e;
+  --shadow:          rgba(232, 130, 154, 0.08);
+  --shadow-hover:    rgba(232, 130, 154, 0.18);
+  --frosted:         rgba(232, 130, 154, 0.06);
+  --frosted-hover:   rgba(232, 130, 154, 0.12);
+  --bg-start:        #1a0d13;
+  --bg-mid:          #1f1018;
+  --bg-end:          #1c0f1a;
+  --card-bg:         #2a1520;
+  --card-bg-glass:   rgba(42, 21, 32, 0.85);
 }
 
 html,
 body {
   height: 100%;
   font-family: var(--font-lato), 'Lato', sans-serif;
-  background: linear-gradient(160deg, #f0d9e2 0%, #f5e2ea 60%, #ecdaf5 100%);
+  background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 60%, var(--bg-end) 100%);
   background-attachment: fixed;
   color: var(--color-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s ease, color 0.3s ease;
 }
