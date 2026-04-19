@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { query, ensureTables } from '@/lib/db';
 
 interface SessionRow {
@@ -7,7 +7,11 @@ interface SessionRow {
   preview: string;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const pin = req.nextUrl.searchParams.get('pin')?.trim();
+  if (!pin || !/^\d{4}$/.test(pin))
+    return NextResponse.json({ error: '`pin` query param must be a 4-digit number.' }, { status: 400 });
+
   try {
     await ensureTables();
     const rows = await query<SessionRow>(`
@@ -16,9 +20,10 @@ export async function GET() {
               WHERE m.session_id = s.session_id
               ORDER BY m.created_at ASC LIMIT 1) AS preview
       FROM sessions s
+      WHERE s.pin_code = $1
       ORDER BY s.created_at DESC
       LIMIT 20
-    `);
+    `, [pin]);
     return NextResponse.json(rows);
   } catch (err) {
     console.error('[sessions] GET error:', err);

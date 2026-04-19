@@ -49,10 +49,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const intent    = (formData.get('intent')    as string | null)?.trim();
   const sessionId = (formData.get('sessionId') as string | null)?.trim();
+  const pinCode   = (formData.get('pinCode')   as string | null)?.trim();
   const file      = formData.get('file') as File | null;
 
   if (!intent)    return NextResponse.json({ error: '`intent` is required.'    }, { status: 400 });
   if (!sessionId) return NextResponse.json({ error: '`sessionId` is required.' }, { status: 400 });
+  if (!pinCode || !/^\d{4}$/.test(pinCode))
+    return NextResponse.json({ error: '`pinCode` must be a 4-digit number.' }, { status: 400 });
   if (file && file.size > MAX_FILE_BYTES)
     return NextResponse.json({ error: 'File exceeds 20 MB limit.' }, { status: 413 });
 
@@ -115,8 +118,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Persist to DB
   try {
     await query(
-      `INSERT INTO sessions (session_id) VALUES ($1) ON CONFLICT DO NOTHING`,
-      [sessionId],
+      `INSERT INTO sessions (session_id, pin_code) VALUES ($1, $2) ON CONFLICT (session_id) DO UPDATE SET pin_code = $2`,
+      [sessionId, pinCode],
     );
     await query(
       `INSERT INTO messages (session_id, intent, response, filename) VALUES ($1, $2, $3, $4)`,

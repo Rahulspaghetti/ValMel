@@ -21,7 +21,7 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: 'MeliBoo',
   icons: {
-    icon: '/ValMel/assets/sunflower.png',
+    icon: '/assets/sunflower.png',
   },
 };
 

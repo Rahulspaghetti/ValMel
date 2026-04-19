@@ -1,6 +1,5 @@
 import { Pool } from 'pg';
 
-// Strip sslmode from URL so the explicit ssl config below takes full effect
 const connStr = (process.env.DATABASE_URL ?? '').replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
 
 const pool = new Pool({
@@ -48,6 +47,13 @@ export async function ensureTables(): Promise<void> {
   `);
   await pool.query(`
     CREATE INDEX IF NOT EXISTS documents_search_idx ON documents USING GIN(search_vec)
+  `);
+  // Add pin_code column if it doesn't exist yet (idempotent migration)
+  await pool.query(`
+    ALTER TABLE sessions ADD COLUMN IF NOT EXISTS pin_code TEXT
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS sessions_pin_idx ON sessions(pin_code)
   `);
   tablesReady = true;
 }

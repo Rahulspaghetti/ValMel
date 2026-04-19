@@ -664,6 +664,103 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   opacity    : 0.5;
 }
 
+// ── PIN Gate ─────────────────────────────────────────────────────────────────
+
+.pinOverlay {
+  position       : fixed;
+  inset          : 0;
+  z-index        : 200;
+  background     : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 60%, var(--bg-end) 100%);
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  transition     : background 0.3s ease;
+}
+
+.pinBox {
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  gap           : 2rem;
+  padding       : 3rem 3.5rem;
+  background    : var(--card-bg-glass);
+  backdrop-filter: blur(16px);
+  border        : 1px solid var(--border);
+  border-radius : 28px;
+  box-shadow    : 0 8px 40px var(--shadow-hover);
+  text-align    : center;
+}
+
+.pinTitle {
+  font-family: $font-serif;
+  font-style : italic;
+  font-size  : clamp(1.6rem, 4vw, 2.2rem);
+  color      : var(--color-primary);
+  margin     : 0;
+}
+
+.pinSubtitle {
+  font-family: $font-body;
+  font-weight: 300;
+  font-size  : 1rem;
+  color      : var(--color-secondary);
+  margin     : -1rem 0 0;
+  letter-spacing: 0.06em;
+}
+
+.pinInputs {
+  display: flex;
+  gap    : 12px;
+}
+
+.pinDigit {
+  width          : 56px;
+  height         : 68px;
+  border-radius  : 14px;
+  border         : 1.5px solid var(--border);
+  background     : var(--card-bg);
+  color          : var(--color-primary);
+  font-family    : $mono;
+  font-size      : 2rem;
+  font-weight    : 600;
+  text-align     : center;
+  caret-color    : var(--color-accent);
+  outline        : none;
+  transition     : border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: var(--color-accent);
+    box-shadow  : 0 0 0 3px rgba(232, 130, 154, 0.2);
+  }
+}
+
+.pinError {
+  font-family: $font-body;
+  font-size  : 0.92rem;
+  color      : var(--color-accent);
+  margin     : -0.5rem 0 0;
+  min-height : 1.2em;
+}
+
+.pinSubmit {
+  background   : var(--color-accent);
+  color        : #fff;
+  border       : none;
+  border-radius: 100px;
+  padding      : 0.7rem 2.4rem;
+  font-family  : $font-body;
+  font-size    : 1rem;
+  font-weight  : 500;
+  letter-spacing: 0.08em;
+  cursor       : pointer;
+  box-shadow   : 0 4px 16px var(--shadow-hover);
+  transition   : opacity 0.15s, transform 0.1s;
+
+  &:hover  { opacity: 0.88; }
+  &:active { transform: scale(0.97); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
 // ── Responsive ───────────────────────────────────────────────────────────────
 
 @media (max-width: 768px) {

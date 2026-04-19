@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent, FormEvent, useEffect, useCallback } from 'react';
+import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
 import styles from './agent.module.scss';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -46,30 +46,108 @@ const ACCEPTED_TYPES = [
   '.csv', '.xml', '.html', '.css', '.scss',
 ].join(',');
 
+const PIN_KEY = 'meli_pin';
+
+// ------------------------------------------------------------------ PinGate
+
+function PinGate({ onUnlock }: { onUnlock: (pin: string) => void }) {
+  const [digits, setDigits] = useState(['', '', '', '']);
+  const [error,  setError]  = useState('');
+  const ref0 = useRef<HTMLInputElement>(null);
+  const ref1 = useRef<HTMLInputElement>(null);
+  const ref2 = useRef<HTMLInputElement>(null);
+  const ref3 = useRef<HTMLInputElement>(null);
+  const refs = [ref0, ref1, ref2, ref3];
+
+  useEffect(() => { ref0.current?.focus(); }, []);
+
+  function handleDigit(idx: number, val: string) {
+    if (!/^\d?$/.test(val)) return;
+    const next = [...digits];
+    next[idx] = val.slice(-1);
+    setDigits(next);
+    setError('');
+    if (val && idx < 3) refs[idx + 1].current?.focus();
+  }
+
+  function handleKeyDown(idx: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Backspace' && !digits[idx] && idx > 0) {
+      refs[idx - 1].current?.focus();
+    }
+    if (e.key === 'Enter') submit(digits);
+  }
+
+  function submit(d = digits) {
+    const pin = d.join('');
+    if (pin.length < 4) { setError('Enter all 4 digits'); return; }
+    sessionStorage.setItem(PIN_KEY, pin);
+    onUnlock(pin);
+  }
+
+  return (
+    <div className={styles.pinOverlay}>
+      <div className={styles.pinBox}>
+        <p className={styles.pinTitle}>MeliBoo Law</p>
+        <p className={styles.pinSubtitle}>Enter your 4-digit PIN to continue</p>
+        <div className={styles.pinInputs}>
+          {digits.map((d, i) => (
+            <input
+              key={i}
+              ref={refs[i]}
+              className={styles.pinDigit}
+              type="password"
+              inputMode="numeric"
+              maxLength={1}
+              value={d}
+              onChange={e => handleDigit(i, e.target.value)}
+              onKeyDown={e => handleKeyDown(i, e)}
+            />
+          ))}
+        </div>
+        {error && <p className={styles.pinError}>{error}</p>}
+        <button
+          className={styles.pinSubmit}
+          onClick={() => submit()}
+          disabled={digits.join('').length < 4}
+        >
+          Unlock
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ------------------------------------------------------------------ component
 
 export default function AgentPage() {
-  const [sessionId, setSessionId]     = useState(generateSessionId);
-  const [history,   setHistory]       = useState<HistoryItem[]>([]);
-  const [intent,    setIntent]        = useState('');
-  const [loading,   setLoading]       = useState(false);
-  const [result,    setResult]        = useState<ApiResult | null>(null);
-  const [file,      setFile]          = useState<File | null>(null);
-
+  const [pin,       setPin]       = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState(generateSessionId);
+  const [history,   setHistory]   = useState<HistoryItem[]>([]);
+  const [intent,    setIntent]    = useState('');
+  const [loading,   setLoading]   = useState(false);
+  const [result,    setResult]    = useState<ApiResult | null>(null);
+  const [file,      setFile]      = useState<File | null>(null);
   const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
 
   const fileInputRef   = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef    = useRef<HTMLTextAreaElement>(null);
 
-  const loadSessions = useCallback(async () => {
+  useEffect(() => {
+    const stored = sessionStorage.getItem(PIN_KEY);
+    if (stored) setPin(stored);
+  }, []);
+
+  const loadSessions = useCallback(async (p: string) => {
     try {
-      const res = await fetch('/api/sessions');
+      const res = await fetch(`/api/sessions?pin=${p}`);
       if (res.ok) setPastSessions(await res.json());
     } catch { /* silent */ }
   }, []);
 
-  useEffect(() => { loadSessions(); }, [loadSessions]);
+  useEffect(() => {
+    if (pin) loadSessions(pin);
+  }, [pin, loadSessions]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,8 +178,9 @@ export default function AgentPage() {
   }
 
   async function loadPastSession(id: string) {
+    if (!pin) return;
     try {
-      const res = await fetch(`/api/sessions/${id}`);
+      const res = await fetch(`/api/sessions/${id}?pin=${pin}`);
       if (!res.ok) return;
       const msgs: Array<{ intent: string; response: string; filename: string | null }> = await res.json();
       setSessionId(id);
@@ -110,15 +189,16 @@ export default function AgentPage() {
     } catch { /* silent */ }
   }
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!intent.trim()) return;
+    if (!intent.trim() || !pin) return;
     setLoading(true);
     setResult(null);
 
     const form = new FormData();
     form.append('intent', intent.trim());
     form.append('sessionId', sessionId);
+    form.append('pinCode', pin);
     if (file) form.append('file', file);
 
     try {
@@ -130,7 +210,7 @@ export default function AgentPage() {
         setIntent('');
         clearFile();
         if (textareaRef.current) textareaRef.current.style.height = 'auto';
-        await loadSessions();
+        await loadSessions(pin);
       }
     } catch {
       setResult({ error: 'Network error — is the dev server running?' });
@@ -142,7 +222,7 @@ export default function AgentPage() {
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as unknown as FormEvent);
+      handleSubmit(e as unknown as React.FormEvent);
     }
   }
 
@@ -150,6 +230,8 @@ export default function AgentPage() {
 
   return (
     <div className={styles.shell}>
+
+      {!pin && <PinGate onUnlock={setPin} />}
 
       {/* ── Flowers ── */}
       <div className={styles.flowers} aria-hidden="true">
@@ -174,7 +256,6 @@ export default function AgentPage() {
           </button>
         </div>
 
-        {/* Past Sessions */}
         <div className={styles.sidebarSection}>
           <div className={styles.sidebarLabel}>Sessions</div>
           {pastSessions.length === 0 && (
@@ -194,10 +275,9 @@ export default function AgentPage() {
           ))}
         </div>
 
-        {/* Session foot */}
         <div className={styles.sidebarFoot}>
           <div className={styles.sessionPill}>
-            <p className={styles.sessionLabel}>Session ID</p>
+            <p className={styles.sessionLabel}>PIN ····</p>
             <code className={styles.sessionCode}>{sessionId}</code>
           </div>
         </div>
@@ -206,7 +286,6 @@ export default function AgentPage() {
       {/* ── Main ── */}
       <main className={styles.main}>
 
-        {/* Top bar */}
         <div className={styles.topbar}>
           <span className={styles.topbarTitle}>
             {history.length > 0
@@ -224,15 +303,12 @@ export default function AgentPage() {
           </div>
         </div>
 
-        {/* Messages */}
         <div className={styles.messages}>
           {history.length === 0 && !loading && (
             <div className={styles.emptyState}>
               <div className={styles.emptyIcon} />
               <p className={styles.emptyTitle}>Ask a law question</p>
-              <p className={styles.emptySubtitle}>
-                Sessions are saved automatically.
-              </p>
+              <p className={styles.emptySubtitle}>Sessions are saved automatically.</p>
             </div>
           )}
 
@@ -283,14 +359,13 @@ export default function AgentPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input bar */}
         <form className={styles.inputBar} onSubmit={handleSubmit}>
           <div className={styles.inputWrap}>
             <div className={styles.inputTop}>
               <textarea
                 ref={textareaRef}
                 className={styles.textarea}
-                placeholder="Ask me a law question, Miss Melissa Villagran… (Shift+Enter for newline)"
+                placeholder="Ask me a law question, Miss Melissa Villagrand… (Shift+Enter for newline)"
                 value={intent}
                 onChange={(e) => setIntent(e.target.value)}
                 onInput={handleTextareaInput}
