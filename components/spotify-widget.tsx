@@ -13,9 +13,9 @@ declare global {
 }
 
 interface SpotifyPlayerOpts {
-  name        : string;
+  name         : string;
   getOAuthToken: (cb: (token: string) => void) => void;
-  volume?     : number;
+  volume?      : number;
 }
 
 interface SpotifyPlayer {
@@ -41,19 +41,33 @@ interface SpotifyState {
   };
 }
 
+interface Playlist {
+  id        : string;
+  uri       : string;
+  name      : string;
+  imageUrl  : string | null;
+  trackCount: number;
+}
+
 // ── Component ───────────────────────────────────────────────────────────────
 
 type ConnectedState = 'checking' | 'disconnected' | 'connected';
 
 export function SpotifyWidget() {
-  const [status,    setStatus]    = useState<ConnectedState>('checking');
-  const [collapsed, setCollapsed] = useState(false);
-  const [ready,     setReady]     = useState(false);
-  const [track,     setTrack]     = useState<SpotifyState['track_window']['current_track'] | null>(null);
-  const [paused,    setPaused]    = useState(true);
+  const [status,           setStatus]           = useState<ConnectedState>('checking');
+  const [collapsed,        setCollapsed]        = useState(false);
+  const [ready,            setReady]            = useState(false);
+  const [deviceId,         setDeviceId]         = useState<string | null>(null);
+  const [track,            setTrack]            = useState<SpotifyState['track_window']['current_track'] | null>(null);
+  const [paused,           setPaused]           = useState(true);
+  const [modalOpen,        setModalOpen]        = useState(false);
+  const [playlists,        setPlaylists]        = useState<Playlist[]>([]);
+  const [playlistsLoading, setPlaylistsLoading] = useState(false);
+  const [playlistsError,   setPlaylistsError]   = useState(false);
+  const [playError,        setPlayError]        = useState(false);
 
-  const playerRef  = useRef<SpotifyPlayer | null>(null);
-  const tokenRef   = useRef<string>('');
+  const playerRef = useRef<SpotifyPlayer | null>(null);
+  const tokenRef  = useRef<string>('');
 
   const fetchToken = useCallback(async (): Promise<string | null> => {
     try {
@@ -67,25 +81,36 @@ export function SpotifyWidget() {
     }
   }, []);
 
-  // Check connection on mount
+  // ── Check connection on mount; strip ?spotify=connected from URL ──────────
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('spotify') === 'connected') {
+      params.delete('spotify');
+      const newSearch = params.toString();
+      window.history.replaceState(
+        {},
+        '',
+        newSearch ? `?${newSearch}` : window.location.pathname,
+      );
+    }
     fetchToken().then(token => {
       setStatus(token ? 'connected' : 'disconnected');
     });
-  }, []);
+  }, [fetchToken]);
 
-  // Load SDK once connected
+  // ── Load SDK once connected ───────────────────────────────────────────────
   useEffect(() => {
     if (status !== 'connected') return;
 
     const initPlayer = () => {
       const player = new window.Spotify!.Player({
-        name        : 'MeliBoo',
+        name         : 'MeliBoo',
         getOAuthToken: cb => { fetchToken().then(t => cb(t ?? '')); },
-        volume      : 0.8,
+        volume       : 0.8,
       });
 
       player.addListener('ready', async ({ device_id }) => {
+        setDeviceId(device_id);
         const token = await fetchToken();
         if (!token) return;
         const res = await fetch('https://api.spotify.com/v1/me/player', {
@@ -133,10 +158,44 @@ export function SpotifyWidget() {
     };
   }, [status, fetchToken]);
 
-  // ── Render: still checking ───────────────────────────────────────────────
+  // ── Playlist modal helpers ────────────────────────────────────────────────
+  async function openModal() {
+    setModalOpen(true);
+    setPlaylistsLoading(true);
+    setPlaylistsError(false);
+    setPlayError(false);
+    try {
+      const res = await fetch('/api/spotify/playlists');
+      if (!res.ok) throw new Error('fetch_failed');
+      const data = await res.json() as { playlists: Playlist[] };
+      setPlaylists(data.playlists);
+    } catch {
+      setPlaylistsError(true);
+    } finally {
+      setPlaylistsLoading(false);
+    }
+  }
+
+  async function playPlaylist(uri: string) {
+    if (!deviceId) return;
+    setPlayError(false);
+    try {
+      const res = await fetch('/api/spotify/play', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ playlistUri: uri, deviceId }),
+      });
+      if (!res.ok) throw new Error('play_failed');
+      setModalOpen(false);
+    } catch {
+      setPlayError(true);
+    }
+  }
+
+  // ── Render: still checking ────────────────────────────────────────────────
   if (status === 'checking') return null;
 
-  // ── Render: not connected ────────────────────────────────────────────────
+  // ── Render: not connected ─────────────────────────────────────────────────
   if (status === 'disconnected') {
     return (
       <div className={styles.widget}>
@@ -150,82 +209,141 @@ export function SpotifyWidget() {
     );
   }
 
-  // ── Render: connected ────────────────────────────────────────────────────
+  // ── Render: connected ─────────────────────────────────────────────────────
   const albumArt = track?.album.images[0]?.url;
 
   return (
-    <div className={`${styles.widget} ${collapsed ? styles.collapsed : ''}`}>
-      {!collapsed && (
-        <>
-          {albumArt
-            ? /* eslint-disable-next-line @next/next/no-img-element */
-              <img className={styles.albumArt} src={albumArt} alt={track?.album.name ?? ''} />
-            : (
-              <div className={styles.musicIcon}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9 3v9.18A3 3 0 1 0 11 15V7h3V3H9z"/>
-                </svg>
-              </div>
-            )
-          }
-          <div className={styles.info}>
-            <span className={styles.trackName}>{track?.name ?? 'Not playing'}</span>
-            <span className={styles.artist}>
-              {track?.artists.map(a => a.name).join(', ') ?? '—'}
-            </span>
+    <div className={styles.modalWrap}>
+      {/* Playlist modal */}
+      {modalOpen && (
+        <div className={styles.modal}>
+          <div className={styles.modalHeader}>
+            <span className={styles.modalTitle}>Your Playlists</span>
+            <button className={styles.modalClose} onClick={() => setModalOpen(false)}>✕</button>
           </div>
-        </>
+          {playError && <p className={styles.modalError}>Failed to start. Try again.</p>}
+
+          {playlistsLoading && (
+            <div className={styles.modalList}>
+              {[0, 1, 2, 3].map(i => <div key={i} className={styles.skeletonRow} />)}
+            </div>
+          )}
+
+          {playlistsError && !playlistsLoading && (
+            <div className={styles.modalEmpty}>
+              <p>Couldn&apos;t load playlists.</p>
+              <button className={styles.retryBtn} onClick={openModal}>Retry</button>
+            </div>
+          )}
+
+          {!playlistsLoading && !playlistsError && (
+            <div className={styles.modalList}>
+              {playlists.map(p => (
+                <button key={p.id} className={styles.playlistRow} onClick={() => playPlaylist(p.uri)}>
+                  {p.imageUrl
+                    ? /* eslint-disable-next-line @next/next/no-img-element */
+                      <img className={styles.playlistThumb} src={p.imageUrl} alt={p.name} />
+                    : <div className={styles.playlistThumbFallback} />
+                  }
+                  <div className={styles.playlistInfo}>
+                    <span className={styles.playlistName}>{p.name}</span>
+                    <span className={styles.playlistCount}>{p.trackCount} tracks</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
-      <div className={styles.controls}>
+      {/* Player widget */}
+      <div className={`${styles.widget} ${collapsed ? styles.collapsed : ''}`}>
         {!collapsed && (
-          <button
-            className={styles.ctrl}
-            onClick={() => playerRef.current?.previousTrack()}
-            disabled={!ready}
-            title="Previous"
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-              <path d="M8 1L3 5l5 4V1zM2 1h1.2v8H2V1z"/>
-            </svg>
-          </button>
+          <>
+            {albumArt
+              ? /* eslint-disable-next-line @next/next/no-img-element */
+                <img className={styles.albumArt} src={albumArt} alt={track?.album.name ?? ''} />
+              : (
+                <div className={styles.musicIcon}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 3v9.18A3 3 0 1 0 11 15V7h3V3H9z"/>
+                  </svg>
+                </div>
+              )
+            }
+            <div className={styles.info}>
+              <span className={styles.trackName}>{track?.name ?? 'Not playing'}</span>
+              <span className={styles.artist}>
+                {track?.artists.map(a => a.name).join(', ') ?? '—'}
+              </span>
+            </div>
+          </>
         )}
 
-        <button
-          className={styles.ctrl}
-          onClick={() => playerRef.current?.togglePlay()}
-          disabled={!ready}
-          title={paused ? 'Play' : 'Pause'}
-        >
-          {paused
-            ? <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M2 1.5l7 3.5-7 3.5V1.5z"/></svg>
-            : <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="1.5" y="1" width="3" height="8" rx="1"/><rect x="5.5" y="1" width="3" height="8" rx="1"/></svg>
-          }
-        </button>
+        <div className={styles.controls}>
+          {!collapsed && (
+            <button
+              className={styles.ctrl}
+              onClick={() => playerRef.current?.previousTrack()}
+              disabled={!ready}
+              title="Previous"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                <path d="M8 1L3 5l5 4V1zM2 1h1.2v8H2V1z"/>
+              </svg>
+            </button>
+          )}
 
-        {!collapsed && (
           <button
             className={styles.ctrl}
-            onClick={() => playerRef.current?.nextTrack()}
+            onClick={() => playerRef.current?.togglePlay()}
             disabled={!ready}
-            title="Next"
+            title={paused ? 'Play' : 'Pause'}
           >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-              <path d="M2 1l5 4-5 4V1zM6.8 1H8v8H6.8V1z"/>
-            </svg>
+            {paused
+              ? <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M2 1.5l7 3.5-7 3.5V1.5z"/></svg>
+              : <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="1.5" y="1" width="3" height="8" rx="1"/><rect x="5.5" y="1" width="3" height="8" rx="1"/></svg>
+            }
           </button>
-        )}
 
-        <button
-          className={styles.ctrl}
-          onClick={() => setCollapsed(c => !c)}
-          title={collapsed ? 'Expand' : 'Collapse'}
-        >
-          {collapsed
-            ? <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 6l3-3 3 3"/></svg>
-            : <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 4l3 3 3-3"/></svg>
-          }
-        </button>
+          {!collapsed && (
+            <button
+              className={styles.ctrl}
+              onClick={() => playerRef.current?.nextTrack()}
+              disabled={!ready}
+              title="Next"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                <path d="M2 1l5 4-5 4V1zM6.8 1H8v8H6.8V1z"/>
+              </svg>
+            </button>
+          )}
+
+          {!collapsed && ready && deviceId && (
+            <button
+              className={styles.ctrl}
+              onClick={openModal}
+              title="Pick playlist"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
+                <rect x="0" y="1"    width="10" height="1.5" rx="0.75"/>
+                <rect x="0" y="4.25" width="7.5" height="1.5" rx="0.75"/>
+                <rect x="0" y="7.5"  width="5"   height="1.5" rx="0.75"/>
+              </svg>
+            </button>
+          )}
+
+          <button
+            className={styles.ctrl}
+            onClick={() => setCollapsed(c => !c)}
+            title={collapsed ? 'Expand' : 'Collapse'}
+          >
+            {collapsed
+              ? <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 6l3-3 3 3"/></svg>
+              : <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M2 4l3 3 3-3"/></svg>
+            }
+          </button>
+        </div>
       </div>
     </div>
   );
