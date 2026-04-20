@@ -105,3 +105,164 @@
   &:hover    { background: var(--frosted); }
   &:disabled { opacity: 0.35; cursor: not-allowed; }
 }
+
+// ── Playlist modal ────────────────────────────────────────────────────────────
+
+.modalWrap {
+  position: relative;
+}
+
+.modal {
+  position      : absolute;
+  bottom        : calc(100% + 8px);
+  right         : 0;
+  width         : 260px;
+  max-height    : 340px;
+  background    : var(--card-bg-glass);
+  backdrop-filter: blur(16px);
+  border        : 1px solid var(--border);
+  border-radius : 16px;
+  box-shadow    : 0 8px 32px var(--shadow-hover);
+  display       : flex;
+  flex-direction: column;
+  overflow      : hidden;
+  z-index       : 100;
+  transition    : background 0.3s ease;
+}
+
+.modalHeader {
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+  padding        : 12px 14px 10px;
+  border-bottom  : 1px solid var(--border);
+  flex-shrink    : 0;
+}
+
+.modalTitle {
+  font-family   : var(--font-lato), 'Lato', sans-serif;
+  font-size     : 0.75rem;
+  font-weight   : 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color         : var(--color-secondary);
+}
+
+.modalClose {
+  background : transparent;
+  border     : none;
+  color      : var(--color-secondary);
+  cursor     : pointer;
+  font-size  : 0.75rem;
+  padding    : 0;
+  line-height: 1;
+  opacity    : 0.6;
+
+  &:hover { opacity: 1; }
+}
+
+.modalError {
+  font-size: 0.72rem;
+  color    : var(--color-accent);
+  padding  : 6px 14px 0;
+  margin   : 0;
+}
+
+.modalList {
+  overflow-y: auto;
+  flex      : 1;
+  padding   : 6px 0;
+}
+
+.playlistRow {
+  display    : flex;
+  align-items: center;
+  gap        : 10px;
+  width      : 100%;
+  padding    : 7px 14px;
+  background : transparent;
+  border     : none;
+  cursor     : pointer;
+  text-align : left;
+  transition : background 0.1s;
+
+  &:hover { background: var(--frosted); }
+}
+
+.playlistThumb {
+  width        : 36px;
+  height       : 36px;
+  border-radius: 6px;
+  object-fit   : cover;
+  flex-shrink  : 0;
+}
+
+.playlistThumbFallback {
+  width        : 36px;
+  height       : 36px;
+  border-radius: 6px;
+  background   : var(--frosted);
+  border       : 1px solid var(--border);
+  flex-shrink  : 0;
+}
+
+.playlistInfo {
+  display       : flex;
+  flex-direction: column;
+  gap           : 2px;
+  min-width     : 0;
+}
+
+.playlistName {
+  font-family  : var(--font-lato), 'Lato', sans-serif;
+  font-size    : 0.78rem;
+  font-weight  : 500;
+  color        : var(--color-primary);
+  white-space  : nowrap;
+  overflow     : hidden;
+  text-overflow: ellipsis;
+}
+
+.playlistCount {
+  font-size: 0.68rem;
+  color    : var(--color-secondary);
+  opacity  : 0.65;
+}
+
+.skeletonRow {
+  height         : 50px;
+  margin         : 4px 14px;
+  border-radius  : 8px;
+  background     : linear-gradient(90deg, var(--border) 25%, var(--bg-end) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation      : shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.modalEmpty {
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  gap           : 8px;
+  padding       : 20px 14px;
+  font-size     : 0.78rem;
+  color         : var(--color-secondary);
+
+  p { margin: 0; }
+}
+
+.retryBtn {
+  background   : var(--frosted);
+  border       : 1px solid var(--border);
+  border-radius: 8px;
+  padding      : 4px 12px;
+  font-size    : 0.72rem;
+  color        : var(--color-accent);
+  cursor       : pointer;
+
+  &:hover { background: var(--frosted-hover); }
+}
