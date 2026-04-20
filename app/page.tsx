@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './page.module.scss';
 import { getMessage, msUntilMidnight } from '@/lib/messages';
 import { getDailyVerse, BibleVerse } from '@/lib/bible';
 import { getWeather, WeatherData, WeatherError } from '@/lib/weather';
-import { ThemeToggle } from '@/components/theme-toggle';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -19,28 +18,18 @@ function getGreeting(): { text: string; emoji: string } {
 }
 
 export default function Home() {
-  const [showIntro, setShowIntro]         = useState(true);
-  const [musicPlaying, setMusicPlaying]   = useState(false);
-  const [greeting]                        = useState(getGreeting);
+  const [showIntro, setShowIntro]           = useState(true);
+  const [greeting]                          = useState(getGreeting);
 
-  const [bibleVerse, setBibleVerse]       = useState<BibleVerse | null>(null);
-  const [bibleLoading, setBibleLoading]   = useState(true);
-  const [bibleError, setBibleError]       = useState(false);
+  const [bibleVerse, setBibleVerse]         = useState<BibleVerse | null>(null);
+  const [bibleLoading, setBibleLoading]     = useState(true);
+  const [bibleError, setBibleError]         = useState(false);
 
-  const [weather, setWeather]             = useState<WeatherData | null>(null);
+  const [weather, setWeather]               = useState<WeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
-  const [weatherError, setWeatherError]   = useState<WeatherError | null>(null);
+  const [weatherError, setWeatherError]     = useState<WeatherError | null>(null);
 
-  const [cuteMessage, setCuteMessage]     = useState('');
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    audioRef.current = new Audio(`${BASE}/assets/music.mp3`);
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.5;
-    return () => { audioRef.current?.pause(); };
-  }, []);
+  const [cuteMessage, setCuteMessage]       = useState('');
 
   useEffect(() => {
     setCuteMessage(getMessage());
@@ -73,20 +62,7 @@ export default function Home() {
       });
   }
 
-  function dismissIntro() {
-    setShowIntro(false);
-    audioRef.current?.play().then(() => setMusicPlaying(true)).catch(() => {});
-  }
-
-  function toggleMusic() {
-    if (!audioRef.current) return;
-    if (musicPlaying) {
-      audioRef.current.pause();
-      setMusicPlaying(false);
-    } else {
-      audioRef.current.play().then(() => setMusicPlaying(true)).catch(() => {});
-    }
-  }
+  function dismissIntro() { setShowIntro(false); }
 
   const flowerStyle = { backgroundImage: `url('${BASE}/assets/sunflower.png')` };
 
@@ -104,19 +80,6 @@ export default function Home() {
         </div>
       )}
 
-      {!showIntro && (
-        <div className={styles.fixedBtns}>
-          <button
-            className={styles.musicBtn}
-            onClick={toggleMusic}
-            title={musicPlaying ? 'Pause music' : 'Play music'}
-          >
-            {musicPlaying ? '♪' : '♩'}
-          </button>
-          <ThemeToggle className={styles.themeBtn} />
-        </div>
-      )}
-
       <div className={styles.flowers} aria-hidden="true">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <span key={i} className={`${styles.flower} ${styles[`f${i}`]}`} style={flowerStyle} />
@@ -131,7 +94,6 @@ export default function Home() {
 
         <main className={styles.cards}>
 
-          {/* Bible */}
           <article className={`${styles.card} ${styles.bibleCard}`}>
             <span className={styles.cardGlyph}>✦</span>
             <h2 className={styles.cardLabel}>Today's Word</h2>
@@ -154,7 +116,6 @@ export default function Home() {
             )}
           </article>
 
-          {/* Weather */}
           <article className={`${styles.card} ${styles.weatherCard}`}>
             <span className={styles.cardGlyph}>☁</span>
             <h2 className={styles.cardLabel}>Right Now</h2>
@@ -188,7 +149,6 @@ export default function Home() {
             )}
           </article>
 
-          {/* Cute Message */}
           <article className={`${styles.card} ${styles.messageCard}`}>
             <span className={styles.cardGlyph}>♡</span>
             <h2 className={styles.cardLabel}>A Little Note</h2>

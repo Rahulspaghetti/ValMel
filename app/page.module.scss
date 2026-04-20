@@ -55,56 +55,6 @@
   50%       { opacity: 0.4; }
 }
 
-// ── Fixed button stack (music + theme) ───────────────────
-.fixedBtns {
-  position: fixed;
-  bottom: 1.8rem;
-  right: 1.8rem;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  align-items: center;
-}
-
-.musicBtn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  color: var(--color-accent);
-  font-size: 1.4rem;
-  cursor: pointer;
-  box-shadow: 0 4px 16px var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 22px var(--shadow-hover);
-  }
-}
-
-.themeBtn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50% !important;
-  border: 1px solid var(--border) !important;
-  background: var(--card-bg) !important;
-  color: var(--color-accent) !important;
-  box-shadow: 0 4px 16px var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease !important;
-
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 22px var(--shadow-hover);
-    background: var(--card-bg) !important;
-  }
-}
-
 // ── Background flowers ───────────────────────────────────
 .flowers {
   position: fixed;
@@ -175,6 +125,7 @@
 
   @media (max-width: 720px) {
     grid-template-columns: 1fr;
+    gap: 1.4rem;
   }
 }
 
@@ -397,4 +348,30 @@
     box-shadow: 0 8px 24px var(--shadow-hover);
     background: var(--frosted-hover);
   }
+}
+
+// ── Tablet (≤ 768px) ─────────────────────────────────────
+@media (max-width: 768px) {
+  .page  { padding: 4rem 1.8rem 2.5rem; gap: 3rem; }
+  .card  { padding: 2.6rem 2rem; }
+
+  .f1 { width: 300px; height: 300px; }
+  .f4 { width: 240px; height: 240px; }
+}
+
+// ── Mobile (≤ 480px) ─────────────────────────────────────
+@media (max-width: 480px) {
+  .page  { padding: 3rem 1.2rem 2rem; gap: 2.5rem; }
+  .card  { padding: 1.8rem 1.4rem; border-radius: 24px; }
+
+  .f1 { width: 220px; height: 220px; }
+  .f2 { width: 160px; height: 160px; }
+  .f3 { display: none; }
+  .f4 { width: 180px; height: 180px; }
+  .f5 { display: none; }
+  .f6 { width: 100px; height: 100px; }
+
+  .verseText   { font-size: 1.15rem; }
+  .messageText { font-size: 1.15rem; }
+  .temp        { font-size: 4rem; }
 }
