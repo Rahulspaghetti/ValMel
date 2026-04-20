@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './spotify-widget.module.scss';
 
 // ── Spotify SDK global types ────────────────────────────────────────────────
@@ -55,7 +55,7 @@ export function SpotifyWidget() {
   const playerRef  = useRef<SpotifyPlayer | null>(null);
   const tokenRef   = useRef<string>('');
 
-  async function fetchToken(): Promise<string | null> {
+  const fetchToken = useCallback(async (): Promise<string | null> => {
     try {
       const res = await fetch('/api/spotify/token');
       if (!res.ok) return null;
@@ -65,7 +65,7 @@ export function SpotifyWidget() {
     } catch {
       return null;
     }
-  }
+  }, []);
 
   // Check connection on mount
   useEffect(() => {
@@ -85,17 +85,18 @@ export function SpotifyWidget() {
         volume      : 0.8,
       });
 
-      player.addListener('ready', ({ device_id }) => {
-        // Transfer playback to this device (no auto-play)
-        fetch('https://api.spotify.com/v1/me/player', {
+      player.addListener('ready', async ({ device_id }) => {
+        const token = await fetchToken();
+        if (!token) return;
+        const res = await fetch('https://api.spotify.com/v1/me/player', {
           method : 'PUT',
           headers: {
-            Authorization : `Bearer ${tokenRef.current}`,
+            Authorization : `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ device_ids: [device_id], play: false }),
         });
-        setReady(true);
+        if (res.ok || res.status === 204) setReady(true);
       });
 
       player.addListener('player_state_changed', state => {
@@ -105,6 +106,7 @@ export function SpotifyWidget() {
       });
 
       player.addListener('authentication_error', () => setStatus('disconnected'));
+      player.addListener('not_ready', () => setReady(false));
 
       player.connect();
       playerRef.current = player;
@@ -125,8 +127,11 @@ export function SpotifyWidget() {
     return () => {
       playerRef.current?.disconnect();
       playerRef.current = null;
+      if (window.onSpotifyWebPlaybackSDKReady === initPlayer) {
+        window.onSpotifyWebPlaybackSDKReady = undefined;
+      }
     };
-  }, [status]);
+  }, [status, fetchToken]);
 
   // ── Render: still checking ───────────────────────────────────────────────
   if (status === 'checking') return null;
@@ -154,7 +159,7 @@ export function SpotifyWidget() {
         <>
           {albumArt
             ? /* eslint-disable-next-line @next/next/no-img-element */
-              <img className={styles.albumArt} src={albumArt} alt={track?.album.name} />
+              <img className={styles.albumArt} src={albumArt} alt={track?.album.name ?? ''} />
             : (
               <div className={styles.musicIcon}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
