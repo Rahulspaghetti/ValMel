@@ -220,26 +220,10 @@ export function SpotifyWidget() {
     setTracksLoading(true);
     setTracksError(false);
     try {
-      const token = await fetchToken();
-      if (!token) throw new Error('no_token');
-      const res = await fetch(
-        `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?limit=50`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const res = await fetch(`/api/spotify/playlists/${playlist.id}/tracks`);
       if (!res.ok) throw new Error('fetch_failed');
       const data = await res.json();
-      const items: Track[] = (data.items ?? [])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .filter((i: any) => i.track?.id)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .map((i: any) => ({
-          id     : i.track.id,
-          uri    : i.track.uri,
-          name   : i.track.name,
-          artists: (i.track.artists ?? []).map((a: { name: string }) => a.name).join(', '),
-          art    : i.track.album?.images?.[0]?.url ?? null,
-        }));
-      setTracks(items);
+      setTracks(data.tracks ?? []);
     } catch {
       setTracksError(true);
     } finally {
