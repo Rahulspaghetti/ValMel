@@ -223,19 +223,21 @@ export function SpotifyWidget() {
       const token = await fetchToken();
       if (!token) throw new Error('no_token');
       const res = await fetch(
-        `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?fields=items(track(id,uri,name,artists(name),album(images)))&limit=50`,
+        `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?limit=50`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (!res.ok) throw new Error('fetch_failed');
       const data = await res.json();
       const items: Track[] = (data.items ?? [])
-        .filter((i: { track: { id: string; uri: string; name: string; artists: Array<{name: string}>; album: {images: Array<{url: string}>} } | null }) => i.track?.id)
-        .map((i: { track: { id: string; uri: string; name: string; artists: Array<{name: string}>; album: {images: Array<{url: string}>} } }) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .filter((i: any) => i.track?.id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((i: any) => ({
           id     : i.track.id,
           uri    : i.track.uri,
           name   : i.track.name,
-          artists: i.track.artists.map((a: { name: string }) => a.name).join(', '),
-          art    : i.track.album.images[0]?.url ?? null,
+          artists: (i.track.artists ?? []).map((a: { name: string }) => a.name).join(', '),
+          art    : i.track.album?.images?.[0]?.url ?? null,
         }));
       setTracks(items);
     } catch {
