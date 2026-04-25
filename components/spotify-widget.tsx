@@ -59,6 +59,10 @@ interface Track {
   art    : string | null;
 }
 
+const PLAYLISTS_KEY = 'valmell_spotify_playlists';
+const PLAYLISTS_TTL = 30 * 60 * 1000;
+const TRACKS_TTL    = 60 * 60 * 1000;
+
 // ── Component ───────────────────────────────────────────────────────────────
 
 type ConnectedState = 'checking' | 'disconnected' | 'connected';
@@ -82,16 +86,23 @@ export function SpotifyWidget() {
   const [tracks,           setTracks]           = useState<Track[]>([]);
   const [tracksLoading,    setTracksLoading]    = useState(false);
   const [tracksError,      setTracksError]      = useState(false);
+  const [trackSearch,      setTrackSearch]      = useState('');
+  const [playlistSearch,   setPlaylistSearch]   = useState('');
 
-  const playerRef = useRef<SpotifyPlayer | null>(null);
-  const tokenRef  = useRef<string>('');
+  const playerRef      = useRef<SpotifyPlayer | null>(null);
+  const tokenRef       = useRef<string>('');
+  const tokenExpiryRef = useRef<number>(0);
 
   const fetchToken = useCallback(async (): Promise<string | null> => {
+    if (tokenRef.current && Date.now() < tokenExpiryRef.current) {
+      return tokenRef.current;
+    }
     try {
       const res = await fetch('/api/spotify/token');
       if (!res.ok) return null;
       const data = await res.json();
-      tokenRef.current = data.access_token;
+      tokenRef.current       = data.access_token;
+      tokenExpiryRef.current = Date.now() + 55 * 60 * 1000;
       return data.access_token;
     } catch {
       return null;
@@ -200,14 +211,28 @@ export function SpotifyWidget() {
   // ── Playlist modal helpers ────────────────────────────────────────────────
   async function openModal() {
     setModalOpen(true);
-    setPlaylistsLoading(true);
     setPlaylistsError(false);
     setPlayError(false);
+    setPlaylistSearch('');
+
+    try {
+      const raw = localStorage.getItem(PLAYLISTS_KEY);
+      if (raw) {
+        const { data, cachedAt } = JSON.parse(raw) as { data: Playlist[]; cachedAt: number };
+        if (Date.now() - cachedAt < PLAYLISTS_TTL) {
+          setPlaylists(data);
+          return;
+        }
+      }
+    } catch { /* corrupt cache — fall through */ }
+
+    setPlaylistsLoading(true);
     try {
       const res = await fetch('/api/spotify/playlists');
       if (!res.ok) throw new Error('fetch_failed');
       const data = await res.json() as { playlists: Playlist[] };
       setPlaylists(data.playlists);
+      localStorage.setItem(PLAYLISTS_KEY, JSON.stringify({ data: data.playlists, cachedAt: Date.now() }));
     } catch {
       setPlaylistsError(true);
     } finally {
@@ -217,26 +242,51 @@ export function SpotifyWidget() {
 
   async function openPlaylistTracks(playlist: Playlist) {
     setDrillPlaylist(playlist);
-    setTracksLoading(true);
     setTracksError(false);
+    setTrackSearch('');
+
+    const tracksKey = `valmell_spotify_tracks_${playlist.id}`;
+    try {
+      const raw = localStorage.getItem(tracksKey);
+      if (raw) {
+        const { data, cachedAt } = JSON.parse(raw) as { data: Track[]; cachedAt: number };
+        if (Date.now() - cachedAt < TRACKS_TTL) {
+          setTracks(data);
+          return;
+        }
+      }
+    } catch { /* corrupt cache — fall through */ }
+
+    setTracksLoading(true);
     try {
       const token = await fetchToken();
       if (!token) throw new Error('no_token');
-      const res = await fetch(
-        `https://api.spotify.com/v1/playlists/${playlist.id}/items?limit=50`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      if (!res.ok) throw new Error('fetch_failed');
-      const data = await res.json();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const items: Track[] = (data.items ?? []).filter((i: any) => i.track?.id).map((i: any) => ({
-        id     : i.track.id,
-        uri    : i.track.uri,
-        name   : i.track.name,
-        artists: (i.track.artists ?? []).map((a: { name: string }) => a.name).join(', '),
-        art    : i.track.album?.images?.[0]?.url ?? null,
-      }));
-      setTracks(items);
+
+      const allItems: Track[] = [];
+      let url: string | null = `https://api.spotify.com/v1/playlists/${playlist.id}/items?limit=100`;
+
+      while (url) {
+        const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error(`spotify_${res.status}`);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data: any = await res.json();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped = (data.items ?? []).filter((i: any) =>
+          i?.item?.id && !i.is_local && i.item.type === 'track'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ).map((i: any): Track => ({
+          id     : i.item.id,
+          uri    : i.item.uri,
+          name   : i.item.name,
+          artists: (i.item.artists ?? []).map((a: { name: string }) => a.name).join(', '),
+          art    : i.item.album?.images?.[0]?.url ?? null,
+        }));
+        allItems.push(...mapped);
+        url = data.next ?? null;
+      }
+
+      setTracks(allItems);
+      localStorage.setItem(tracksKey, JSON.stringify({ data: allItems, cachedAt: Date.now() }));
     } catch {
       setTracksError(true);
     } finally {
@@ -321,13 +371,30 @@ export function SpotifyWidget() {
                 </svg>
               </button>
             ) : null}
-            <span className={styles.modalTitle}>
-              {drillPlaylist ? drillPlaylist.name : 'Your Playlists'}
-            </span>
+            {drillPlaylist ? (
+              <div className={styles.modalTitleGroup}>
+                <span className={styles.modalTitle}>{drillPlaylist.name}</span>
+                {!tracksLoading && !tracksError && (
+                  <span className={styles.modalCount}>{tracks.length} songs</span>
+                )}
+              </div>
+            ) : (
+              <span className={styles.modalTitle}>Your Playlists</span>
+            )}
             <button className={styles.modalClose} onClick={() => { setModalOpen(false); setDrillPlaylist(null); setTracks([]); }}>✕</button>
           </div>
 
           {playError && <p className={styles.modalError}>Failed to start. Try again.</p>}
+
+          {/* Search input */}
+          <div className={styles.modalSearch}>
+            <input
+              className={styles.searchInput}
+              placeholder={drillPlaylist ? 'Search tracks…' : 'Search playlists…'}
+              value={drillPlaylist ? trackSearch : playlistSearch}
+              onChange={e => drillPlaylist ? setTrackSearch(e.target.value) : setPlaylistSearch(e.target.value)}
+            />
+          </div>
 
           {/* Playlist view */}
           {!drillPlaylist && (
@@ -343,23 +410,30 @@ export function SpotifyWidget() {
                   <button className={styles.retryBtn} onClick={openModal}>Retry</button>
                 </div>
               )}
-              {!playlistsLoading && !playlistsError && (
-                <div className={styles.modalList}>
-                  {playlists.map(p => (
-                    <button key={p.id} className={styles.playlistRow} onClick={() => openPlaylistTracks(p)}>
-                      {p.imageUrl
-                        ? /* eslint-disable-next-line @next/next/no-img-element */
-                          <img className={styles.playlistThumb} src={p.imageUrl} alt={p.name} />
-                        : <div className={styles.playlistThumbFallback} />
-                      }
-                      <div className={styles.playlistInfo}>
-                        <span className={styles.playlistName}>{p.name}</span>
-                        <span className={styles.playlistCount}>{p.trackCount} tracks</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {!playlistsLoading && !playlistsError && (() => {
+                const filtered = playlistSearch
+                  ? playlists.filter(p => p.name.toLowerCase().includes(playlistSearch.toLowerCase()))
+                  : playlists;
+                return (
+                  <div className={styles.modalList}>
+                    {filtered.length === 0
+                      ? <div className={styles.modalEmpty}><p>No playlists match.</p></div>
+                      : filtered.map(p => (
+                          <button key={p.id} className={styles.playlistRow} onClick={() => openPlaylistTracks(p)}>
+                            {p.imageUrl
+                              ? /* eslint-disable-next-line @next/next/no-img-element */
+                                <img className={styles.playlistThumb} src={p.imageUrl} alt={p.name} />
+                              : <div className={styles.playlistThumbFallback} />
+                            }
+                            <div className={styles.playlistInfo}>
+                              <span className={styles.playlistName}>{p.name}</span>
+                            </div>
+                          </button>
+                        ))
+                    }
+                  </div>
+                );
+              })()}
             </>
           )}
 
@@ -377,23 +451,34 @@ export function SpotifyWidget() {
                   <button className={styles.retryBtn} onClick={() => openPlaylistTracks(drillPlaylist)}>Retry</button>
                 </div>
               )}
-              {!tracksLoading && !tracksError && (
-                <div className={styles.modalList}>
-                  {tracks.map(t => (
-                    <button key={t.id} className={styles.playlistRow} onClick={() => playTrack(t.uri)}>
-                      {t.art
-                        ? /* eslint-disable-next-line @next/next/no-img-element */
-                          <img className={styles.playlistThumb} src={t.art} alt={t.name} />
-                        : <div className={styles.playlistThumbFallback} />
-                      }
-                      <div className={styles.playlistInfo}>
-                        <span className={styles.playlistName}>{t.name}</span>
-                        <span className={styles.playlistCount}>{t.artists}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              {!tracksLoading && !tracksError && (() => {
+                const filtered = trackSearch
+                  ? tracks.filter(t =>
+                      t.name.toLowerCase().includes(trackSearch.toLowerCase()) ||
+                      t.artists.toLowerCase().includes(trackSearch.toLowerCase())
+                    )
+                  : tracks;
+                return (
+                  <div className={styles.modalList}>
+                    {filtered.length === 0
+                      ? <div className={styles.modalEmpty}><p>No tracks match.</p></div>
+                      : filtered.map(t => (
+                          <button key={t.id} className={styles.playlistRow} onClick={() => playTrack(t.uri)}>
+                            {t.art
+                              ? /* eslint-disable-next-line @next/next/no-img-element */
+                                <img className={styles.playlistThumb} src={t.art} alt={t.name} />
+                              : <div className={styles.playlistThumbFallback} />
+                            }
+                            <div className={styles.playlistInfo}>
+                              <span className={styles.playlistName}>{t.name}</span>
+                              <span className={styles.playlistCount}>{t.artists}</span>
+                            </div>
+                          </button>
+                        ))
+                    }
+                  </div>
+                );
+              })()}
             </>
           )}
         </div>

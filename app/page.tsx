@@ -18,7 +18,7 @@ function getGreeting(): { text: string; emoji: string } {
 }
 
 export default function Home() {
-  const [showIntro, setShowIntro]           = useState(true);
+  const [showIntro, setShowIntro]           = useState<boolean | null>(null);
   const [greeting]                          = useState(getGreeting);
 
   const [bibleVerse, setBibleVerse]         = useState<BibleVerse | null>(null);
@@ -32,6 +32,9 @@ export default function Home() {
   const [cuteMessage, setCuteMessage]       = useState('');
 
   useEffect(() => {
+    const seen = localStorage.getItem('valmell_greeting_seen');
+    setShowIntro(seen !== greeting.text);
+
     setCuteMessage(getMessage());
     loadBibleVerse();
     loadWeather();
@@ -62,7 +65,10 @@ export default function Home() {
       });
   }
 
-  function dismissIntro() { setShowIntro(false); }
+  function dismissIntro() {
+    localStorage.setItem('valmell_greeting_seen', greeting.text);
+    setShowIntro(false);
+  }
 
   const flowerStyle = { backgroundImage: `url('${BASE}/assets/sunflower.png')` };
 

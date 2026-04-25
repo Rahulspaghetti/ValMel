@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
       maxAge: tokens.expires_in - 60,
     });
     return res;
-  } catch {
-    return NextResponse.redirect(new URL('/?spotify=error', req.url));
+  } catch (err) {
+    console.error('[spotify/callback] token exchange failed:', err);
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.redirect(new URL(`/?spotify=error&reason=${encodeURIComponent(msg)}`, req.url));
   }
 }

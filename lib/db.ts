@@ -55,5 +55,15 @@ export async function ensureTables(): Promise<void> {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS sessions_pin_idx ON sessions(pin_code)
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS playlist (
+      id         SERIAL PRIMARY KEY,
+      youtube_id TEXT NOT NULL,
+      title      TEXT NOT NULL,
+      artist     TEXT,
+      position   INT DEFAULT 0,
+      added_at   TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
   tablesReady = true;
 }

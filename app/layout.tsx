@@ -34,11 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div style={{
             position      : 'fixed',
             bottom        : '1.8rem',
-            right         : '1.8rem',
+            left          : '1.8rem',
             zIndex        : 50,
             display       : 'flex',
             flexDirection : 'column',
-            alignItems    : 'flex-end',
+            alignItems    : 'flex-start',
             gap           : '0.6rem',
           }}>
             <SpotifyWidget />

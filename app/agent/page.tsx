@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './agent.module.scss';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -128,6 +130,8 @@ export default function AgentPage() {
   const [result,    setResult]    = useState<ApiResult | null>(null);
   const [file,      setFile]      = useState<File | null>(null);
   const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
+  const [sidebarOpen,       setSidebarOpen]       = useState(false);
+  const [sidebarCollapsed,  setSidebarCollapsed]  = useState(false);
 
   const fileInputRef   = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -175,10 +179,12 @@ export default function AgentPage() {
     setResult(null);
     setIntent('');
     clearFile();
+    setSidebarOpen(false);
   }
 
   async function loadPastSession(id: string) {
     if (!pin) return;
+    setSidebarOpen(false);
     try {
       const res = await fetch(`/api/sessions/${id}?pin=${pin}`);
       if (!res.ok) return;
@@ -241,12 +247,23 @@ export default function AgentPage() {
         ))}
       </div>
 
+      {/* ── Sidebar backdrop (mobile) ── */}
+      {sidebarOpen && (
+        <div className={styles.sidebarBackdrop} onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* ── Sidebar ── */}
-      <aside className={styles.sidebar}>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
         <div className={styles.sidebarTop}>
           <div className={styles.brandRow}>
             <div className={styles.brandDot} />
             <span className={styles.brandName}>MeliBoo Law</span>
+            <button
+              className={styles.collapseBtn}
+              type="button"
+              onClick={() => setSidebarCollapsed(c => !c)}
+              title="Collapse sidebar"
+            >‹</button>
           </div>
           <button className={styles.newChatBtn} type="button" onClick={startNewSession}>
             <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
@@ -287,9 +304,29 @@ export default function AgentPage() {
       <main className={styles.main}>
 
         <div className={styles.topbar}>
+          <button
+            className={styles.menuBtn}
+            type="button"
+            onClick={() => setSidebarOpen(o => !o)}
+            title="Menu"
+          >
+            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+              <path d="M1 3h12M1 7h12M1 11h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+          </button>
+          {sidebarCollapsed && (
+            <button
+              className={styles.iconBtn}
+              type="button"
+              onClick={() => setSidebarCollapsed(false)}
+              title="Expand sidebar"
+            >›</button>
+          )}
           <span className={styles.topbarTitle}>
             {history.length > 0
-              ? `${history.length} message${history.length !== 1 ? 's' : ''}`
+              ? (history[0].intent.length > 42
+                  ? history[0].intent.slice(0, 42) + '…'
+                  : history[0].intent)
               : 'Madame MeliBoo'}
           </span>
           <div className={styles.topbarActions}>
@@ -331,9 +368,9 @@ export default function AgentPage() {
               <div className={styles.agentRow}>
                 <div className={styles.agentAvatar} />
                 <div className={styles.agentBubble}>
-                  <div className={styles.agentText}>
-                    <pre>{item.response}</pre>
-                  </div>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {item.response}
+                  </ReactMarkdown>
                 </div>
               </div>
             </div>

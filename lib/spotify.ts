@@ -25,7 +25,10 @@ export async function exchangeCode(
     },
     body: new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: redirectUri }),
   });
-  if (!res.ok) throw new Error(`Spotify token exchange ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Spotify token exchange ${res.status}: ${body}`);
+  }
   return res.json();
 }
 

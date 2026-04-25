@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { refreshAccessToken } from '@/lib/spotify';
+import { log } from 'console';
 
 export async function GET(req: NextRequest) {
   let token = req.cookies.get('sp_access')?.value;
@@ -22,6 +23,7 @@ export async function GET(req: NextRequest) {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) {
+      log('Spotify API error:', res.status, res.statusText);
       return NextResponse.json({ error: 'spotify_error' }, { status: res.status });
     }
     const data = await res.json();
