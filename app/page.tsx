@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './page.module.scss';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { getMessage, msUntilMidnight } from '@/lib/messages';
 import { getDailyVerse, BibleVerse } from '@/lib/bible';
 import { getWeather, WeatherData, WeatherError } from '@/lib/weather';
@@ -74,6 +75,10 @@ export default function Home() {
 
   return (
     <>
+      <div style={{ position: 'fixed', top: '1.2rem', right: '1.2rem', zIndex: 50 }}>
+        <ThemeToggle />
+      </div>
+
       {showIntro && (
         <div className={styles.introOverlay} onClick={dismissIntro}>
           <div className={styles.introBox}>

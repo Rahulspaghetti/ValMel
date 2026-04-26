@@ -4,7 +4,6 @@ import './globals.scss';
 import './tailwind.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SpotifyWidget } from '@/components/spotify-widget';
-import { ThemeToggle } from '@/components/theme-toggle';
 
 const playfair = Playfair_Display({
   subsets : ['latin'],
@@ -42,7 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gap           : '0.6rem',
           }}>
             <SpotifyWidget />
-            <ThemeToggle />
           </div>
         </ThemeProvider>
       </body>
