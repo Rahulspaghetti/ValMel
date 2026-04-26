@@ -94,7 +94,7 @@ export default function Home() {
 
       <div className={styles.page}>
         <header className={styles.header}>
-          <h1 className={styles.title}>MeliBoo</h1>
+          <h1 className={styles.title}>Supreme Leader</h1>
           <p className={styles.subtitle}>just for you</p>
         </header>
 
