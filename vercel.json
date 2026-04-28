@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/bible-sms",
+      "schedule": "0 13 * * *"
+    }
+  ]
+}
