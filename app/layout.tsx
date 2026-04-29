@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Lato } from 'next/font/google';
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import './globals.scss';
 import './tailwind.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SpotifyWidget } from '@/components/spotify-widget';
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets : ['latin'],
-  variable: '--font-playfair',
+  variable: '--font-cormorant',
+  weight  : ['300', '400', '600'],
   style   : ['normal', 'italic'],
   display : 'swap',
 });
 
-const lato = Lato({
+const dmSans = DM_Sans({
   subsets : ['latin'],
-  weight  : ['300', '400', '700'],
-  variable: '--font-lato',
+  variable: '--font-dm-sans',
+  weight  : ['300', '400', '500'],
   display : 'swap',
 });
 
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${playfair.variable} ${lato.variable}`}>
+      <body className={`${cormorant.variable} ${dmSans.variable}`}>
         <ThemeProvider>
           {children}
           <div style={{

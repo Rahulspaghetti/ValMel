@@ -1,58 +1,31 @@
-// agent.module.scss — MeliBoo pink theme (CSS vars for dark mode support)
-
 $radius-card: 20px;
 $radius-msg:  20px;
 $mono:        'Courier New', Courier, monospace;
-$font-body:   var(--font-lato), 'Lato', sans-serif;
-$font-serif:  var(--font-playfair), 'Playfair Display', serif;
+$font-body:   var(--font-dm-sans), 'DM Sans', sans-serif;
+$font-serif:  var(--font-cormorant), 'Cormorant Garamond', serif;
 
-// ── Layout shell ────────────────────────────────────────────────────────────
+// ── Layout shell ─────────────────────────────────────────────────────────────
 
 .shell {
-  display   : flex;
-  height    : 100vh;
-  background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 60%, var(--bg-end) 100%);
+  display    : flex;
+  height     : 100vh;
+  background : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
   background-attachment: fixed;
-  color     : var(--color-primary);
+  color      : var(--cream);
   font-family: $font-body;
-  overflow  : hidden;
-  position  : relative;
-  transition: background 0.3s ease, color 0.3s ease;
+  overflow   : hidden;
+  position   : relative;
+  transition : background 0.3s ease, color 0.3s ease;
 }
 
-// ── Background flowers ───────────────────────────────────────────────────────
-
-.flowers {
-  position      : fixed;
-  inset         : 0;
-  pointer-events: none;
-  z-index       : 0;
-  overflow      : hidden;
-}
-
-.flower {
-  position         : absolute;
-  background-position: center;
-  background-size  : contain;
-  background-repeat: no-repeat;
-  opacity          : 0.18;
-}
-
-.f1 { width: 420px; height: 420px; top: -120px;   left: -120px;  transform: rotate(-20deg); }
-.f2 { width: 260px; height: 260px; top:   8%;     right: -70px;  transform: rotate(12deg);  }
-.f3 { width: 180px; height: 180px; top:  45%;     left:  3%;     transform: rotate(30deg);  }
-.f4 { width: 340px; height: 340px; bottom: -90px; right: -90px;  transform: rotate(-10deg); }
-.f5 { width: 200px; height: 200px; bottom: 20%;   left:  20%;    transform: rotate(45deg);  }
-.f6 { width: 150px; height: 150px; top:   30%;    right:  8%;    transform: rotate(-35deg); }
-
-// ── Sidebar ─────────────────────────────────────────────────────────────────
+// ── Sidebar ──────────────────────────────────────────────────────────────────
 
 .sidebar {
   width         : 260px;
   min-width     : 260px;
-  background    : var(--card-bg-glass);
+  background    : var(--card-bg);
   backdrop-filter: blur(12px);
-  border-right  : 1px solid var(--border);
+  border-right  : 1px solid var(--card-border);
   display       : flex;
   flex-direction: column;
   padding       : 20px 14px;
@@ -77,16 +50,16 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width          : 28px;
   height         : 28px;
   background     : var(--frosted);
-  border         : 1px solid var(--border);
+  border         : 1px solid var(--card-border);
   border-radius  : 8px;
-  color          : var(--color-secondary);
+  color          : var(--text-dim);
   cursor         : pointer;
   flex-shrink    : 0;
   margin-left    : auto;
   font-size      : 14px;
   transition     : background 0.12s, color 0.12s;
 
-  &:hover { background: var(--frosted-hover); color: var(--color-primary); }
+  &:hover { background: var(--frosted-hover); color: var(--cream); }
 }
 
 .sidebarTop {
@@ -94,7 +67,7 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   flex-direction: column;
   gap           : 10px;
   padding-bottom: 14px;
-  border-bottom : 1px solid var(--border);
+  border-bottom : 1px solid var(--card-border);
 }
 
 .brandRow {
@@ -108,18 +81,18 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width        : 32px;
   height       : 32px;
   border-radius: 50%;
-  background   : linear-gradient(135deg, var(--color-accent), #c96882);
+  background   : linear-gradient(135deg, var(--gold), var(--gold-pale));
   flex-shrink  : 0;
-  box-shadow   : 0 0 14px var(--shadow-hover);
+  box-shadow   : 0 0 14px oklch(72% 0.14 75 / 0.3);
 }
 
 .brandName {
   font-family   : $font-serif;
   font-style    : italic;
   font-size     : 21px;
-  font-weight   : 500;
-  letter-spacing: -0.3px;
-  color         : var(--color-primary);
+  font-weight   : 300;
+  letter-spacing: 0.02em;
+  color         : var(--gold-pale);
 }
 
 .newChatBtn {
@@ -128,12 +101,12 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   justify-content: center;
   gap            : 6px;
   background     : var(--frosted);
-  border         : 1px solid var(--border);
+  border         : 1px solid var(--card-border);
   border-radius  : $radius-card;
-  color          : var(--color-secondary);
+  color          : var(--text-dim);
   cursor         : pointer;
   font-family    : $font-body;
-  font-size      : 15px;
+  font-size      : 14px;
   font-weight    : 400;
   padding        : 9px 14px;
   transition     : background 0.15s, border-color 0.15s, color 0.15s;
@@ -141,8 +114,8 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 
   &:hover {
     background  : var(--frosted-hover);
-    border-color: var(--color-accent);
-    color       : var(--color-primary);
+    border-color: var(--gold);
+    color       : var(--cream);
   }
 
   svg { flex-shrink: 0; stroke: currentColor; }
@@ -153,9 +126,9 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 }
 
 .sidebarLabel {
-  font-size     : 11.5px;
+  font-size     : 10px;
   letter-spacing: 0.18em;
-  color         : var(--color-secondary);
+  color         : var(--text-dim);
   padding       : 0 8px 6px;
   text-transform: uppercase;
   opacity       : 0.7;
@@ -175,130 +148,62 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 
 .historyItemActive {
   background  : var(--frosted);
-  border-left : 2px solid var(--color-accent);
+  border-left : 2px solid var(--gold);
   padding-left: 8px;
 }
 
-// ── Knowledge base ────────────────────────────────────────────────────────────
-
-.uploadDocBtn {
-  display        : flex;
-  align-items    : center;
-  justify-content: center;
-  gap            : 5px;
-  background     : var(--frosted);
-  border         : 1px dashed var(--border);
-  border-radius  : 10px;
-  color          : var(--color-secondary);
-  cursor         : pointer;
-  font-family    : var(--font-lato), 'Lato', sans-serif;
-  font-size      : 13px;
-  padding        : 7px 12px;
-  margin-bottom  : 6px;
-  transition     : background 0.12s, border-color 0.12s;
-  width          : 100%;
-
-  &:hover {
-    background  : var(--frosted-hover);
-    border-color: var(--color-accent);
-    color       : var(--color-primary);
-  }
-}
-
-.docItem {
-  display        : flex;
-  align-items    : center;
-  justify-content: space-between;
-  gap            : 6px;
-  padding        : 5px 8px;
-  border-radius  : 8px;
-  background     : var(--frosted);
-  margin-bottom  : 4px;
-}
-
-.docTitle {
-  font-size    : 12px;
-  color        : var(--color-primary);
-  white-space  : nowrap;
-  overflow     : hidden;
-  text-overflow: ellipsis;
-  flex         : 1;
-}
-
-.docDelete {
-  background  : transparent;
-  border      : none;
-  color       : var(--color-secondary);
-  cursor      : pointer;
-  font-size   : 16px;
-  line-height : 1;
-  padding     : 0;
-  flex-shrink : 0;
-  opacity     : 0.6;
-  transition  : opacity 0.1s;
-
-  &:hover { opacity: 1; color: var(--color-accent); }
-}
-
-.docMsg {
-  font-size  : 11px;
-  color      : var(--color-accent);
-  margin     : 0 0 4px 2px;
-}
-
-.docEmpty {
-  font-size  : 12px;
-  color      : var(--color-secondary);
-  opacity    : 0.5;
-  padding    : 2px 8px;
-  font-style : italic;
-}
-
 .historyItemTitle {
-  font-size    : 15px;
-  color        : var(--color-primary);
+  font-size    : 14px;
+  color        : var(--cream);
   white-space  : nowrap;
   overflow     : hidden;
   text-overflow: ellipsis;
 }
 
 .historyItemMeta {
-  font-size: 12.5px;
-  color    : var(--color-secondary);
+  font-size: 12px;
+  color    : var(--text-dim);
   opacity  : 0.7;
+}
+
+.docEmpty {
+  font-size  : 12px;
+  color      : var(--text-dim);
+  opacity    : 0.5;
+  padding    : 2px 8px;
+  font-style : italic;
 }
 
 .sidebarFoot {
   margin-top : auto;
   padding-top: 14px;
-  border-top : 1px solid var(--border);
+  border-top : 1px solid var(--card-border);
 }
 
 .sessionPill {
   background   : var(--card-bg);
-  border       : 1px solid var(--border);
+  border       : 1px solid var(--card-border);
   border-radius: 12px;
   padding      : 8px 12px;
-  transition   : background 0.3s ease;
 }
 
 .sessionLabel {
-  font-size: 11.5px;
-  color    : var(--color-secondary);
-  margin   : 0 0 3px;
+  font-size     : 10px;
+  color         : var(--text-dim);
+  margin        : 0 0 3px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .sessionCode {
   font-family   : $mono;
-  font-size     : 11.5px;
-  color         : var(--color-secondary);
+  font-size     : 11px;
+  color         : var(--text-dim);
   word-break    : break-all;
   letter-spacing: 0.03em;
 }
 
-// ── Main chat area ───────────────────────────────────────────────────────────
+// ── Main chat area ────────────────────────────────────────────────────────────
 
 .main {
   flex          : 1;
@@ -309,15 +214,15 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   z-index       : 1;
 }
 
-// ── Top bar ─────────────────────────────────────────────────────────────────
+// ── Top bar ───────────────────────────────────────────────────────────────────
 
 .topbar {
   display        : flex;
   align-items    : center;
   justify-content: space-between;
   padding        : 14px 28px;
-  border-bottom  : 1px solid var(--border);
-  background     : var(--card-bg-glass);
+  border-bottom  : 1px solid var(--card-border);
+  background     : var(--card-bg);
   backdrop-filter: blur(8px);
   flex-shrink    : 0;
   position       : relative;
@@ -330,9 +235,9 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   transform     : translateX(-50%);
   font-family   : $font-serif;
   font-style    : italic;
-  font-size     : 18.5px;
-  font-weight   : 500;
-  color         : var(--color-primary);
+  font-weight   : 300;
+  font-size     : 18px;
+  color         : var(--gold-pale);
   white-space   : nowrap;
   overflow      : hidden;
   text-overflow : ellipsis;
@@ -349,23 +254,23 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width          : 37px;
   height         : 37px;
   background     : var(--frosted);
-  border         : 1px solid var(--border);
+  border         : 1px solid var(--card-border);
   border-radius  : 10px;
-  color          : var(--color-secondary);
+  color          : var(--text-dim);
   cursor         : pointer;
   transition     : background 0.12s, color 0.12s;
 
-  &:hover { background: var(--frosted-hover); color: var(--color-primary); }
+  &:hover { background: var(--frosted-hover); color: var(--cream); }
 }
 
 .themeToggle {
   width        : 37px;
   height       : 37px;
   border-radius: 10px !important;
-  border       : 1px solid var(--border) !important;
+  border       : 1px solid var(--card-border) !important;
 }
 
-// ── Messages scroll area ─────────────────────────────────────────────────────
+// ── Messages ─────────────────────────────────────────────────────────────────
 
 .messages {
   flex          : 1;
@@ -374,7 +279,6 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   display       : flex;
   flex-direction: column;
   gap           : 0;
-
 }
 
 .emptyState {
@@ -392,27 +296,25 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width        : 64px;
   height       : 64px;
   border-radius: 50%;
-  background   : linear-gradient(135deg, var(--color-accent), #c96882);
+  background   : linear-gradient(135deg, var(--gold), var(--gold-pale));
   opacity      : 0.25;
   margin-bottom: 4px;
 }
 
 .emptyTitle {
-  font-family   : $font-serif;
-  font-style    : italic;
-  font-size     : 25px;
-  font-weight   : 500;
-  color         : var(--color-primary);
+  font-family: $font-serif;
+  font-style : italic;
+  font-size  : 25px;
+  font-weight: 300;
+  color      : var(--gold-pale);
 }
 
 .emptySubtitle {
-  font-size  : 16px;
-  color      : var(--color-secondary);
+  font-size  : 15px;
+  color      : var(--text-dim);
   max-width  : 320px;
   line-height: 1.6;
 }
-
-// ── Message turn ─────────────────────────────────────────────────────────────
 
 .turn {
   display       : flex;
@@ -422,12 +324,11 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 
 .turnDivider {
   height    : 1px;
-  background: var(--border);
+  background: var(--card-border);
   margin    : 0;
   opacity   : 0.5;
 }
 
-// Human message
 .humanRow {
   display        : flex;
   justify-content: flex-end;
@@ -435,11 +336,11 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 }
 
 .humanBubble {
-  background    : linear-gradient(135deg, rgba(232,130,154,0.18), rgba(232,130,154,0.1));
-  border        : 1px solid rgba(232, 130, 154, 0.3);
+  background    : linear-gradient(135deg, oklch(72% 0.14 75 / 0.15), oklch(72% 0.14 75 / 0.08));
+  border        : 1px solid oklch(72% 0.14 75 / 0.3);
   border-radius : $radius-msg $radius-msg 6px $radius-msg;
-  color         : var(--color-primary);
-  font-size     : 16px;
+  color         : var(--cream);
+  font-size     : 15px;
   line-height   : 1.65;
   max-width     : 68%;
   padding       : 11px 16px;
@@ -451,17 +352,16 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   display      : inline-flex;
   align-items  : center;
   gap          : 4px;
-  background   : rgba(232, 130, 154, 0.12);
-  border       : 1px solid var(--border);
+  background   : oklch(72% 0.14 75 / 0.1);
+  border       : 1px solid var(--card-border);
   border-radius: 8px;
-  font-size    : 12.5px;
+  font-size    : 12px;
   font-family  : $mono;
-  color        : var(--color-accent);
+  color        : var(--gold);
   padding      : 3px 9px;
   margin-bottom: 7px;
 }
 
-// Agent message
 .agentRow {
   display: flex;
   gap    : 14px;
@@ -472,34 +372,34 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width        : 35px;
   height       : 35px;
   border-radius: 50%;
-  background   : linear-gradient(135deg, var(--color-accent), #c96882);
+  background   : linear-gradient(135deg, var(--gold), var(--gold-pale));
   flex-shrink  : 0;
   margin-top   : 2px;
-  box-shadow   : 0 0 12px var(--shadow-hover);
+  box-shadow   : 0 0 12px oklch(72% 0.14 75 / 0.25);
 }
 
 .agentBubble {
   flex     : 1;
   max-width: 720px;
 
-  // markdown prose
-  p      { font-size: 16px; line-height: 1.7; color: var(--color-primary); margin: 0 0 0.8em; word-break: break-word; }
+  p      { font-size: 15px; line-height: 1.7; color: var(--cream); margin: 0 0 0.8em; word-break: break-word; }
   p:last-child { margin-bottom: 0; }
 
   h1, h2, h3, h4 {
-    font-family   : $font-serif;
-    font-style    : italic;
-    color         : var(--color-primary);
-    margin        : 1.1em 0 0.4em;
-    line-height   : 1.3;
+    font-family: $font-serif;
+    font-style : italic;
+    font-weight: 300;
+    color      : var(--gold-pale);
+    margin     : 1.1em 0 0.4em;
+    line-height: 1.3;
   }
   h1 { font-size: 1.45rem; }
   h2 { font-size: 1.25rem; }
   h3 { font-size: 1.1rem; }
   h4 { font-size: 1rem; }
 
-  strong { font-weight: 700; color: var(--color-primary); }
-  em     { font-style: italic; color: var(--color-secondary); }
+  strong { font-weight: 600; color: var(--cream); }
+  em     { font-style: italic; color: var(--text-dim); }
 
   ul, ol {
     padding-left: 1.4em;
@@ -507,96 +407,87 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
     display     : flex;
     flex-direction: column;
     gap         : 0.3em;
-    li { font-size: 16px; line-height: 1.65; color: var(--color-primary); }
+    li { font-size: 15px; line-height: 1.65; color: var(--cream); }
   }
 
   blockquote {
-    border-left : 3px solid var(--color-accent);
-    margin      : 0.8em 0;
-    padding     : 6px 14px;
-    color       : var(--color-secondary);
-    font-style  : italic;
+    border-left: 3px solid var(--gold);
+    margin     : 0.8em 0;
+    padding    : 6px 14px;
+    color      : var(--text-dim);
+    font-style : italic;
   }
 
   code {
-    font-family : $mono;
-    font-size   : 13.5px;
-    background  : var(--frosted);
-    border      : 1px solid var(--border);
+    font-family  : $mono;
+    font-size    : 13px;
+    background   : var(--frosted);
+    border       : 1px solid var(--card-border);
     border-radius: 4px;
-    padding     : 1px 5px;
-    color       : var(--color-accent);
+    padding      : 1px 5px;
+    color        : var(--gold);
   }
 
   pre {
     background   : var(--card-bg);
-    border       : 1px solid var(--border);
-    border-left  : 3px solid var(--color-accent);
+    border       : 1px solid var(--card-border);
+    border-left  : 3px solid var(--gold);
     border-radius: 0 $radius-card $radius-card 0;
-    color        : var(--color-primary);
+    color        : var(--cream);
     font-family  : $mono;
-    font-size    : 14.5px;
+    font-size    : 13.5px;
     line-height  : 1.7;
     overflow-x   : auto;
     padding      : 12px 16px;
     white-space  : pre-wrap;
     word-break   : break-word;
     margin       : 0.6em 0;
-    transition   : background 0.3s ease;
 
     code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
   }
 
   hr {
-    border     : none;
-    border-top : 1px solid var(--border);
-    margin     : 1em 0;
+    border    : none;
+    border-top: 1px solid var(--card-border);
+    margin    : 1em 0;
   }
 
   table {
     width          : 100%;
     border-collapse: collapse;
-    font-size      : 14.5px;
+    font-size      : 14px;
     margin         : 0.8em 0;
 
     th {
-      background : var(--frosted);
-      color      : var(--color-primary);
-      font-weight: 600;
-      padding    : 7px 12px;
-      text-align : left;
-      border-bottom: 1px solid var(--border);
+      background   : var(--frosted);
+      color        : var(--cream);
+      font-weight  : 500;
+      padding      : 7px 12px;
+      text-align   : left;
+      border-bottom: 1px solid var(--card-border);
     }
     td {
-      padding    : 6px 12px;
-      color      : var(--color-primary);
-      border-bottom: 1px solid var(--border);
-      opacity: 0.9;
+      padding      : 6px 12px;
+      color        : var(--cream);
+      border-bottom: 1px solid var(--card-border);
+      opacity      : 0.9;
     }
   }
 }
 
-.agentText {
-  font-size  : 16px;
-  line-height: 1.7;
-  color      : var(--color-primary);
-  white-space: pre-wrap;
-  word-break : break-word;
-}
-
-// ── Error banner ─────────────────────────────────────────────────────────────
+// ── Error banner ──────────────────────────────────────────────────────────────
 
 .errorBanner {
   margin       : 0 28px 8px;
-  background   : rgba(201, 104, 130, 0.1);
-  border       : 1px solid rgba(201, 104, 130, 0.3);
+  background   : oklch(72% 0.14 75 / 0.08);
+  border       : 1px solid oklch(72% 0.14 75 / 0.25);
   border-radius: $radius-card;
-  color        : #c96882;
-  font-size    : 15px;
+  color        : var(--gold);
+  font-size    : 14px;
   padding      : 10px 16px;
 }
 
-// ── Loading indicator ────────────────────────────────────────────────────────
+// ── Loading ───────────────────────────────────────────────────────────────────
 
 .loadingRow {
   display: flex;
@@ -615,7 +506,7 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width        : 8px;
   height       : 8px;
   border-radius: 50%;
-  background   : var(--color-accent);
+  background   : var(--gold);
   animation    : pulse 1.2s ease-in-out infinite;
 
   &:nth-child(2) { animation-delay: 0.2s; }
@@ -627,29 +518,29 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   40%           { opacity: 1;   transform: scale(1);   }
 }
 
-// ── Input bar ────────────────────────────────────────────────────────────────
+// ── Input bar ─────────────────────────────────────────────────────────────────
 
 .inputBar {
   flex-shrink: 0;
   padding    : 14px 28px 22px;
-  border-top : 1px solid var(--border);
-  background : var(--card-bg-glass);
+  border-top : 1px solid var(--card-border);
+  background : var(--card-bg);
   backdrop-filter: blur(8px);
   transition : background 0.3s ease;
 }
 
 .inputWrap {
-  background   : var(--card-bg);
-  border       : 1px solid var(--border);
-  border-radius: $radius-card;
-  box-shadow   : 0 4px 18px var(--shadow);
-  display      : flex;
+  background    : var(--card-bg);
+  border        : 1px solid var(--card-border);
+  border-radius : $radius-card;
+  box-shadow    : 0 4px 18px oklch(5% 0.04 10 / 0.2);
+  display       : flex;
   flex-direction: column;
-  transition   : border-color 0.15s, box-shadow 0.15s, background 0.3s ease;
+  transition    : border-color 0.15s, box-shadow 0.15s;
 
   &:focus-within {
-    border-color: var(--color-accent);
-    box-shadow  : 0 4px 24px var(--shadow-hover);
+    border-color: var(--gold);
+    box-shadow  : 0 4px 24px oklch(72% 0.14 75 / 0.12);
   }
 }
 
@@ -663,19 +554,19 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 .textarea {
   background : transparent;
   border     : none;
-  color      : var(--color-primary);
+  color      : var(--cream);
   flex       : 1;
   font-family: $font-body;
-  font-size  : 16px;
+  font-size  : 15px;
   line-height: 1.6;
   max-height : 180px;
   outline    : none;
   resize     : none;
 
   &::placeholder {
-    color     : var(--color-secondary);
+    color     : var(--text-dim);
     font-style: italic;
-    opacity   : 0.5;
+    opacity   : 0.6;
   }
 }
 
@@ -688,22 +579,22 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   width          : 39px;
   height         : 39px;
   background     : var(--frosted);
-  border         : 1px solid var(--border);
+  border         : 1px solid var(--card-border);
   border-radius  : 10px;
-  color          : var(--color-secondary);
+  color          : var(--text-dim);
   cursor         : pointer;
   flex-shrink    : 0;
   transition     : background 0.12s, color 0.12s;
 
-  &:hover { background: var(--frosted-hover); color: var(--color-primary); }
+  &:hover { background: var(--frosted-hover); color: var(--cream); }
 }
 
 .sendBtn {
   align-items    : center;
-  background     : linear-gradient(135deg, var(--color-accent), #c96882);
+  background     : linear-gradient(135deg, var(--gold), var(--gold-pale));
   border         : none;
   border-radius  : 10px;
-  color          : #fff;
+  color          : #1a0508;
   cursor         : pointer;
   display        : flex;
   flex-shrink    : 0;
@@ -711,18 +602,14 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   justify-content: center;
   padding        : 0 16px;
   font-family    : $font-body;
-  font-size      : 15px;
+  font-size      : 14px;
   font-weight    : 500;
   gap            : 5px;
-  box-shadow     : 0 2px 10px var(--shadow-hover);
+  box-shadow     : 0 2px 10px oklch(72% 0.14 75 / 0.25);
   transition     : opacity 0.15s, transform 0.1s;
 
-  &:disabled {
-    opacity: 0.35;
-    cursor : not-allowed;
-  }
-
-  &:not(:disabled):hover { opacity: 0.88; }
+  &:disabled           { opacity: 0.35; cursor: not-allowed; }
+  &:not(:disabled):hover  { opacity: 0.88; }
   &:not(:disabled):active { transform: scale(0.97); }
 }
 
@@ -731,7 +618,7 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   align-items: center;
   gap        : 8px;
   padding    : 6px 12px 10px 16px;
-  border-top : 1px solid var(--border);
+  border-top : 1px solid var(--card-border);
   min-height : 36px;
 }
 
@@ -739,12 +626,12 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   display      : inline-flex;
   align-items  : center;
   gap          : 5px;
-  background   : rgba(232, 130, 154, 0.12);
-  border       : 1px solid var(--border);
+  background   : oklch(72% 0.14 75 / 0.1);
+  border       : 1px solid var(--card-border);
   border-radius: 8px;
-  color        : var(--color-accent);
+  color        : var(--gold);
   font-family  : $mono;
-  font-size    : 12.5px;
+  font-size    : 12px;
   padding      : 3px 9px;
 }
 
@@ -754,7 +641,7 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   justify-content: center;
   background     : transparent;
   border         : none;
-  color          : var(--color-accent);
+  color          : var(--gold);
   cursor         : pointer;
   font-size      : 17px;
   line-height    : 1;
@@ -766,20 +653,20 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 }
 
 .inputHint {
-  font-size  : 12.5px;
-  color      : var(--color-secondary);
+  font-size  : 12px;
+  color      : var(--text-dim);
   margin-left: auto;
   font-style : italic;
   opacity    : 0.5;
 }
 
-// ── PIN Gate ─────────────────────────────────────────────────────────────────
+// ── PIN Gate ──────────────────────────────────────────────────────────────────
 
 .pinOverlay {
   position       : fixed;
   inset          : 0;
   z-index        : 200;
-  background     : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-mid) 60%, var(--bg-end) 100%);
+  background     : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
   display        : flex;
   align-items    : center;
   justify-content: center;
@@ -792,28 +679,29 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   align-items   : center;
   gap           : 2rem;
   padding       : 3rem 3.5rem;
-  background    : var(--card-bg-glass);
+  background    : var(--card-bg);
   backdrop-filter: blur(16px);
-  border        : 1px solid var(--border);
+  border        : 1px solid var(--card-border);
   border-radius : 28px;
-  box-shadow    : 0 8px 40px var(--shadow-hover);
+  box-shadow    : 0 8px 40px oklch(5% 0.04 10 / 0.4);
   text-align    : center;
 }
 
 .pinTitle {
   font-family: $font-serif;
   font-style : italic;
+  font-weight: 300;
   font-size  : clamp(1.6rem, 4vw, 2.2rem);
-  color      : var(--color-primary);
+  color      : var(--gold-pale);
   margin     : 0;
 }
 
 .pinSubtitle {
-  font-family: $font-body;
-  font-weight: 300;
-  font-size  : 1rem;
-  color      : var(--color-secondary);
-  margin     : -1rem 0 0;
+  font-family   : $font-body;
+  font-weight   : 300;
+  font-size     : 0.95rem;
+  color         : var(--text-dim);
+  margin        : -1rem 0 0;
   letter-spacing: 0.06em;
 }
 
@@ -823,67 +711,60 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
 }
 
 .pinDigit {
-  width          : 56px;
-  height         : 68px;
-  border-radius  : 14px;
-  border         : 1.5px solid var(--border);
-  background     : var(--card-bg);
-  color          : var(--color-primary);
-  font-family    : $mono;
-  font-size      : 2rem;
-  font-weight    : 600;
-  text-align     : center;
-  caret-color    : var(--color-accent);
-  outline        : none;
-  transition     : border-color 0.15s, box-shadow 0.15s;
+  width        : 56px;
+  height       : 68px;
+  border-radius: 14px;
+  border       : 1.5px solid var(--card-border);
+  background   : var(--card-bg);
+  color        : var(--cream);
+  font-family  : $mono;
+  font-size    : 2rem;
+  font-weight  : 600;
+  text-align   : center;
+  caret-color  : var(--gold);
+  outline      : none;
+  transition   : border-color 0.15s, box-shadow 0.15s;
 
   &:focus {
-    border-color: var(--color-accent);
-    box-shadow  : 0 0 0 3px rgba(232, 130, 154, 0.2);
+    border-color: var(--gold);
+    box-shadow  : 0 0 0 3px oklch(72% 0.14 75 / 0.2);
   }
 }
 
 .pinError {
   font-family: $font-body;
-  font-size  : 0.92rem;
-  color      : var(--color-accent);
+  font-size  : 0.88rem;
+  color      : var(--gold);
   margin     : -0.5rem 0 0;
   min-height : 1.2em;
 }
 
 .pinSubmit {
-  background   : var(--color-accent);
-  color        : #fff;
-  border       : none;
-  border-radius: 100px;
-  padding      : 0.7rem 2.4rem;
-  font-family  : $font-body;
-  font-size    : 1rem;
-  font-weight  : 500;
+  background    : linear-gradient(135deg, var(--gold), var(--gold-pale));
+  color         : #1a0508;
+  border        : none;
+  border-radius : 100px;
+  padding       : 0.7rem 2.4rem;
+  font-family   : $font-body;
+  font-size     : 0.95rem;
+  font-weight   : 500;
   letter-spacing: 0.08em;
-  cursor       : pointer;
-  box-shadow   : 0 4px 16px var(--shadow-hover);
-  transition   : opacity 0.15s, transform 0.1s;
+  cursor        : pointer;
+  box-shadow    : 0 4px 16px oklch(72% 0.14 75 / 0.25);
+  transition    : opacity 0.15s, transform 0.1s;
 
-  &:hover  { opacity: 0.88; }
-  &:active { transform: scale(0.97); }
+  &:hover    { opacity: 0.88; }
+  &:active   { transform: scale(0.97); }
   &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
+// ── Responsive ────────────────────────────────────────────────────────────────
 
-// ── Responsive ───────────────────────────────────────────────────────────────
+.menuBtn { display: none; }
 
-.menuBtn {
-  display: none;
-}
+.sidebarBackdrop { display: none; }
 
-.sidebarBackdrop {
-  display: none;
-}
-
-.sidebarOpen {
-  // desktop: no-op — class only used on mobile
-}
+.sidebarOpen { }
 
 @media (max-width: 768px) {
   .menuBtn {
@@ -893,22 +774,22 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
     width          : 37px;
     height         : 37px;
     background     : var(--frosted);
-    border         : 1px solid var(--border);
+    border         : 1px solid var(--card-border);
     border-radius  : 10px;
-    color          : var(--color-secondary);
+    color          : var(--text-dim);
     cursor         : pointer;
     flex-shrink    : 0;
     transition     : background 0.12s, color 0.12s;
 
-    &:hover { background: var(--frosted-hover); color: var(--color-primary); }
+    &:hover { background: var(--frosted-hover); color: var(--cream); }
   }
 
   .sidebarBackdrop {
-    display   : block;
-    position  : fixed;
-    inset     : 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index   : 9;
+    display        : block;
+    position       : fixed;
+    inset          : 0;
+    background     : oklch(5% 0.04 10 / 0.5);
+    z-index        : 9;
     backdrop-filter: blur(2px);
   }
 
@@ -924,7 +805,7 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
     overflow-y: auto;
     overflow-x: hidden;
     transition: left 0.25s ease;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 4px 0 24px oklch(5% 0.04 10 / 0.3);
   }
 
   .sidebarCollapsed { display: none; }
@@ -941,7 +822,6 @@ $font-serif:  var(--font-playfair), 'Playfair Display', serif;
   .topbar { padding-left: 16px; padding-right: 16px; }
 }
 
-// ── Small phones (≤ 400px) ────────────────────────────────────────────────────
 @media (max-width: 400px) {
   .pinBox   { padding: 2rem 1.6rem; }
   .pinDigit { width: 48px; height: 60px; font-size: 1.6rem; }

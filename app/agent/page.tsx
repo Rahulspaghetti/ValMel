@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import styles from './agent.module.scss';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { SunflowerField } from '@/components/sunflower-field';
 
 // ------------------------------------------------------------------ types
 
@@ -239,13 +240,7 @@ export default function AgentPage() {
 
       {!pin && <PinGate onUnlock={setPin} />}
 
-      {/* ── Flowers ── */}
-      <div className={styles.flowers} aria-hidden="true">
-        {[1,2,3,4,5,6].map(i => (
-          <span key={i} className={`${styles.flower} ${styles[`f${i}`]}`}
-            style={{ backgroundImage: `url('/assets/sunflower.png')` }} />
-        ))}
-      </div>
+      <SunflowerField />
 
       {/* ── Sidebar backdrop (mobile) ── */}
       {sidebarOpen && (

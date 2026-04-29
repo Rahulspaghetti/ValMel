@@ -4,6 +4,8 @@ export interface WeatherData {
   description: string;
   icon: string;
   feelsLike: number;
+  humidity: number;
+  windspeed: number;
 }
 
 export type WeatherError = 'location' | 'api';
@@ -42,8 +44,10 @@ export async function getWeather(): Promise<WeatherData> {
       city: data.name,
       temperature: Math.round(data.main.temp),
       description: data.weather[0].description,
-      icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
+      icon: data.weather[0].icon,
       feelsLike: Math.round(data.main.feels_like),
+      humidity: data.main.humidity,
+      windspeed: Math.round((data.wind.speed ?? 0) * 3.6),
     };
   } catch {
     throw { type: 'api' as WeatherError };
