@@ -16,6 +16,8 @@ out/
 
 # Claude
 .claude/
+.agents/
+skills-lock.json
 
 # IDE
 .vscode/
