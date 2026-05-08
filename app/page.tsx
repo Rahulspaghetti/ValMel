@@ -193,6 +193,9 @@ export default function Home() {
               Ask MeliBoo Law ✦
             </Link>
             <p>Made for you by Ra(h)ul</p>
+            <Link href="/privacy-policy" className={styles.privacyLink}>
+              Privacy Policy
+            </Link>
           </footer>
         </div>
       </div>
