@@ -1,0 +1,111 @@
+$font-serif: var(--font-cormorant), 'Cormorant Garamond', serif;
+$font-body:  var(--font-dm-sans), 'DM Sans', sans-serif;
+
+// ── Scene ─────────────────────────────────────────────────
+.scene {
+  position  : relative;
+  min-height: 100vh;
+  width     : 100%;
+
+  &::before {
+    content        : '';
+    position       : fixed;
+    inset          : 0;
+    background     : radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, var(--vignette) 100%);
+    pointer-events : none;
+    z-index        : 1;
+  }
+}
+
+// ── Page layout ───────────────────────────────────────────
+.page {
+  position       : relative;
+  z-index        : 2;
+  min-height     : 100vh;
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  padding        : 5rem 2.5rem 4rem;
+  gap            : 1.8rem;
+}
+
+// ── Back link ─────────────────────────────────────────────
+.back {
+  align-self    : flex-start;
+  font-family   : $font-body;
+  font-size     : 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color         : var(--gold);
+  text-decoration: none;
+  border        : 1px solid var(--card-border);
+  background    : var(--card-bg);
+  padding       : 0.5rem 1.4rem;
+  border-radius : 100px;
+  backdrop-filter: blur(8px);
+  transition    : transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform : translateY(-2px);
+    box-shadow: 0 8px 24px oklch(5% 0.04 10 / 0.3);
+  }
+}
+
+// ── Content ───────────────────────────────────────────────
+.content {
+  width      : 100%;
+  max-width  : 960px;
+  display    : flex;
+  flex-direction: column;
+  gap        : 1.5rem;
+  animation  : fadeUp 0.5s ease both;
+}
+
+// ── Title ─────────────────────────────────────────────────
+.title {
+  font-family   : $font-serif;
+  font-weight   : 300;
+  font-size     : clamp(1.8rem, 4vw, 3rem);
+  letter-spacing: 0.08em;
+  color         : var(--gold-pale);
+  margin        : 0;
+  text-shadow   : 0 0 60px oklch(72% 0.14 75 / 0.3);
+  line-height   : 1.2;
+}
+
+// ── Description ───────────────────────────────────────────
+.description {
+  font-family: $font-serif;
+  font-style : italic;
+  font-weight: 300;
+  font-size  : 1.05rem;
+  line-height: 1.65;
+  color      : var(--cream);
+  margin     : 0;
+  opacity    : 0.85;
+  max-width  : 720px;
+}
+
+// ── States ────────────────────────────────────────────────
+.state {
+  font-family: $font-body;
+  font-style : italic;
+  font-size  : 0.9rem;
+  color      : var(--text-dim);
+  margin-top : 4rem;
+}
+
+// ── Animations ───────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 768px) {
+  .page { padding: 3.5rem 1.5rem 3rem; gap: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 3rem 1.2rem 2.5rem; }
+}

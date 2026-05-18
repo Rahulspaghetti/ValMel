@@ -1,0 +1,276 @@
+// ── Scene ────────────────────────────────────────────────
+.scene {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, var(--vignette) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// ── Page ─────────────────────────────────────────────────
+.page {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5rem 2.5rem 3rem;
+  gap: 3rem;
+}
+
+// ── Header ───────────────────────────────────────────────
+.header {
+  text-align: center;
+  animation: fadeUp 0.6s ease both;
+}
+
+.title {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: 0.12em;
+  color: var(--gold-pale);
+  text-shadow: 0 0 60px oklch(72% 0.14 75 / 0.3);
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 0.7rem;
+}
+
+// ── Grid ─────────────────────────────────────────────────
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+// ── Video card ───────────────────────────────────────────
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 8px 40px oklch(5% 0.04 10 / 0.35),
+    inset 0 1px 0 oklch(72% 0.14 75 / 0.12);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+  animation: fadeUp 0.7s ease both;
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow:
+      0 20px 60px oklch(5% 0.04 10 / 0.45),
+      0 0 40px oklch(72% 0.14 75 / 0.08),
+      inset 0 1px 0 oklch(72% 0.14 75 / 0.2);
+  }
+}
+
+.thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: oklch(12% 0.03 10);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.noThumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  opacity: 0.3;
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  background: oklch(5% 0.04 10 / 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease;
+
+  svg {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    filter: drop-shadow(0 2px 12px oklch(5% 0.04 10 / 0.6));
+    color: var(--gold-pale);
+  }
+
+  .card:hover & {
+    background: oklch(5% 0.04 10 / 0.35);
+
+    svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+.cardBody {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitle {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 1.05rem;
+  color: var(--gold-pale);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.cardMeta {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  opacity: 0.7;
+}
+
+// ── Skeleton ─────────────────────────────────────────────
+.skeletonCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: fadeUp 0.7s ease both;
+}
+
+.skeletonThumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(
+    90deg,
+    oklch(72% 0.14 75 / 0.06) 25%,
+    oklch(72% 0.14 75 / 0.14) 50%,
+    oklch(72% 0.14 75 / 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+.skeletonBody {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonLine {
+  height: 13px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    oklch(72% 0.14 75 / 0.06) 25%,
+    oklch(72% 0.14 75 / 0.14) 50%,
+    oklch(72% 0.14 75 / 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+
+  &.short { width: 55%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Empty state ──────────────────────────────────────────
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+
+  p {
+    font-family: var(--font-cormorant), 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────
+.footer {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.backLink {
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  padding: 0.55rem 1.6rem;
+  border-radius: 100px;
+  backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px oklch(5% 0.04 10 / 0.3);
+  }
+}
+
+// ── Animations ───────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 768px) {
+  .page { padding: 3.5rem 1.5rem 2.5rem; gap: 2rem; }
+  .grid { grid-template-columns: 1fr; max-width: 420px; gap: 16px; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 3rem 1.2rem 2rem; }
+}

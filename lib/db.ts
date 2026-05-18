@@ -65,5 +65,31 @@ export async function ensureTables(): Promise<void> {
       added_at   TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS videos (
+      id            SERIAL PRIMARY KEY,
+      title         TEXT NOT NULL,
+      description   TEXT,
+      thumbnail_url TEXT,
+      url_360p      TEXT,
+      url_720p      TEXT,
+      url_1080p     TEXT,
+      duration      INT,
+      created_at    TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS subtitles (
+      id         SERIAL PRIMARY KEY,
+      video_id   INT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+      language   TEXT NOT NULL,
+      label      TEXT NOT NULL,
+      content    TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS subtitles_video_idx ON subtitles(video_id)
+  `);
   tablesReady = true;
 }

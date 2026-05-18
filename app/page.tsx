@@ -192,6 +192,9 @@ export default function Home() {
             <Link href="/agent" className={styles.agentLink}>
               Ask MeliBoo Law ✦
             </Link>
+            <Link href="/videos" className={styles.agentLink}>
+              Videos ▶
+            </Link>
             <p>Made for you by Ra(h)ul</p>
             <Link href="/privacy-policy" className={styles.privacyLink}>
               Privacy Policy

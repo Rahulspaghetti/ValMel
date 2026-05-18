@@ -1,0 +1,518 @@
+$font-serif: var(--font-cormorant), 'Cormorant Garamond', serif;
+$font-body:  var(--font-dm-sans), 'DM Sans', sans-serif;
+
+// ── Scene ─────────────────────────────────────────────────
+.scene {
+  position  : relative;
+  min-height: 100vh;
+  width     : 100%;
+
+  &::before {
+    content        : '';
+    position       : fixed;
+    inset          : 0;
+    background     : radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, var(--vignette) 100%);
+    pointer-events : none;
+    z-index        : 1;
+  }
+}
+
+// ── Page ──────────────────────────────────────────────────
+.page {
+  position       : relative;
+  z-index        : 2;
+  min-height     : 100vh;
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  padding        : 5rem 2.5rem 4rem;
+  gap            : 2rem;
+  max-width      : 860px;
+  margin         : 0 auto;
+}
+
+// ── Header ────────────────────────────────────────────────
+.title {
+  font-family   : $font-serif;
+  font-weight   : 300;
+  font-size     : clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: 0.12em;
+  color         : var(--gold-pale);
+  text-shadow   : 0 0 60px oklch(72% 0.14 75 / 0.3);
+  margin        : 0;
+  text-align    : center;
+  animation     : fadeUp 0.6s ease both;
+}
+
+// ── Toast ─────────────────────────────────────────────────
+.toast {
+  font-family   : $font-body;
+  font-size     : 0.82rem;
+  color         : var(--gold);
+  letter-spacing: 0.06em;
+  margin        : 0;
+  animation     : fadeUp 0.3s ease both;
+}
+
+// ── Section card ──────────────────────────────────────────
+.section {
+  background     : var(--card-bg);
+  border         : 1px solid var(--card-border);
+  border-radius  : 20px;
+  padding        : 30px 32px;
+  backdrop-filter: blur(20px) saturate(1.4);
+  width          : 100%;
+  animation      : fadeUp 0.7s ease both;
+  box-shadow     :
+    0 8px 40px oklch(5% 0.04 10 / 0.25),
+    inset 0 1px 0 oklch(72% 0.14 75 / 0.1);
+
+  &:nth-child(1) { animation-delay: 0.05s; }
+  &:nth-child(2) { animation-delay: 0.15s; }
+  &:nth-child(3) { animation-delay: 0.25s; }
+}
+
+.sectionTitle {
+  font-family   : $font-serif;
+  font-style    : italic;
+  font-weight   : 300;
+  font-size     : 1.4rem;
+  color         : var(--gold-pale);
+  margin        : 0 0 1.4rem;
+  padding-bottom: 0.7rem;
+  border-bottom : 1px solid var(--card-border);
+}
+
+// ── Form layout ───────────────────────────────────────────
+.form {
+  display       : flex;
+  flex-direction: column;
+  gap           : 1.1rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.threeCol {
+  display              : grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap                  : 0.8rem;
+}
+
+.twoCol {
+  display              : grid;
+  grid-template-columns: 1fr 1fr;
+  gap                  : 0.8rem;
+}
+
+// ── Labels & inputs ───────────────────────────────────────
+.label {
+  font-family   : $font-body;
+  font-size     : 0.6rem;
+  font-weight   : 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color         : var(--gold);
+  opacity       : 0.8;
+}
+
+.input,
+.select,
+.textarea {
+  background     : var(--frosted);
+  border         : 1px solid var(--card-border);
+  border-radius  : 9px;
+  color          : var(--cream);
+  font-family    : $font-body;
+  font-size      : 0.85rem;
+  padding        : 0.55rem 0.85rem;
+  outline        : none;
+  width          : 100%;
+  transition     : border-color 0.15s, box-shadow 0.15s;
+  backdrop-filter: blur(4px);
+
+  &:focus {
+    border-color: var(--gold);
+    box-shadow  : 0 0 0 2px oklch(72% 0.14 75 / 0.15);
+  }
+
+  &::placeholder { color: var(--text-dim); opacity: 0.5; }
+  option          { background: var(--bg-end); }
+}
+
+.textarea {
+  resize    : vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+.vttArea {
+  min-height : 150px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size  : 0.78rem;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--card-border);
+  margin: 0.5rem 0;
+}
+
+// ── Submit button ─────────────────────────────────────────
+.submitBtn {
+  background    : linear-gradient(135deg, var(--gold), var(--gold-pale));
+  color         : #1a0508;
+  border        : none;
+  border-radius : 100px;
+  padding       : 0.65rem 2rem;
+  font-family   : $font-body;
+  font-size     : 0.85rem;
+  font-weight   : 500;
+  letter-spacing: 0.08em;
+  cursor        : pointer;
+  box-shadow    : 0 4px 16px oklch(72% 0.14 75 / 0.2);
+  transition    : opacity 0.15s, transform 0.1s;
+  align-self    : flex-start;
+
+  &:hover  { opacity: 0.88; }
+  &:active { transform: scale(0.97); }
+}
+
+// ── Video list ────────────────────────────────────────────
+.videoList {
+  list-style: none;
+  padding   : 0;
+  margin    : 0;
+  display   : flex;
+  flex-direction: column;
+  gap       : 0.6rem;
+}
+
+.videoRow {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  padding        : 0.65rem 0.9rem;
+  border-radius  : 10px;
+  border         : 1px solid var(--card-border);
+  background     : var(--frosted);
+}
+
+.videoRowTitle {
+  font-family: $font-body;
+  font-size  : 0.88rem;
+  color      : var(--cream);
+}
+
+.videoRowId {
+  font-size  : 0.68rem;
+  color      : var(--text-dim);
+  margin-left: 0.45rem;
+  opacity    : 0.65;
+}
+
+.deleteBtn {
+  background   : transparent;
+  border       : 1px solid oklch(72% 0.14 75 / 0.2);
+  color        : var(--text-dim);
+  border-radius: 6px;
+  padding      : 0.28rem 0.7rem;
+  font-family  : $font-body;
+  font-size    : 0.68rem;
+  letter-spacing: 0.08em;
+  cursor       : pointer;
+  transition   : border-color 0.15s, color 0.15s;
+  flex-shrink  : 0;
+
+  &:hover {
+    border-color: var(--gold);
+    color       : var(--gold);
+  }
+}
+
+// ── 3-dot menu ────────────────────────────────────────────
+.rowActions {
+  position  : relative;
+  flex-shrink: 0;
+}
+
+.dotsBtn {
+  background   : transparent;
+  border       : 1px solid transparent;
+  color        : var(--text-dim);
+  border-radius: 6px;
+  padding      : 0.25rem 0.55rem;
+  font-size    : 1.1rem;
+  cursor       : pointer;
+  line-height  : 1;
+  transition   : border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--card-border);
+    color       : var(--gold);
+    background  : var(--frosted);
+  }
+}
+
+.dropdown {
+  position  : absolute;
+  right     : 0;
+  top       : calc(100% + 6px);
+  z-index   : 50;
+  background: var(--card-bg);
+  border    : 1px solid var(--card-border);
+  border-radius: 10px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px oklch(5% 0.04 10 / 0.35);
+  min-width : 110px;
+  overflow  : hidden;
+  animation : dropIn 0.15s ease both;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropItem {
+  display    : block;
+  width      : 100%;
+  background : transparent;
+  border     : none;
+  text-align : left;
+  padding    : 0.6rem 1rem;
+  font-family: $font-body;
+  font-size  : 0.82rem;
+  color      : var(--cream);
+  cursor     : pointer;
+  transition : background 0.12s;
+
+  &:hover { background: var(--frosted-hover); }
+
+  &.danger {
+    color: oklch(60% 0.18 25);
+    &:hover { background: oklch(60% 0.18 25 / 0.1); }
+  }
+}
+
+// ── Edit section ──────────────────────────────────────────
+.editSection {
+  background     : var(--frosted);
+  border         : 1px solid var(--card-border);
+  border-radius  : 14px;
+  padding        : 22px 22px;
+  display        : flex;
+  flex-direction : column;
+  gap            : 1rem;
+  animation      : fadeUp 0.25s ease both;
+}
+
+.editTitle {
+  font-family   : $font-body;
+  font-size     : 0.65rem;
+  font-weight   : 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color         : var(--gold);
+  margin        : 0;
+}
+
+.editActions {
+  display: flex;
+  gap    : 0.6rem;
+  flex-wrap: wrap;
+}
+
+.cancelBtn {
+  background    : transparent;
+  border        : 1px solid var(--card-border);
+  color         : var(--text-dim);
+  border-radius : 100px;
+  padding       : 0.55rem 1.4rem;
+  font-family   : $font-body;
+  font-size     : 0.82rem;
+  cursor        : pointer;
+  transition    : border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: var(--gold); color: var(--gold); }
+}
+
+.emptyNote {
+  font-family: $font-serif;
+  font-style : italic;
+  color      : var(--text-dim);
+  margin     : 0;
+  font-size  : 0.95rem;
+}
+
+// ── Back link ─────────────────────────────────────────────
+// ── Add Video toggle ──────────────────────────────────────
+.addToggleRow {
+  display        : flex;
+  justify-content: flex-end;
+  width          : 100%;
+}
+
+.addToggleBtn {
+  background    : linear-gradient(135deg, var(--gold), var(--gold-pale));
+  color         : #1a0508;
+  border        : none;
+  border-radius : 100px;
+  padding       : 0.65rem 1.8rem;
+  font-family   : $font-body;
+  font-size     : 0.82rem;
+  font-weight   : 500;
+  letter-spacing: 0.08em;
+  cursor        : pointer;
+  box-shadow    : 0 4px 16px oklch(72% 0.14 75 / 0.2);
+  transition    : opacity 0.15s, transform 0.1s;
+
+  &:hover  { opacity: 0.88; }
+  &:active { transform: scale(0.97); }
+}
+
+// ── Collapsible form wrapper ──────────────────────────────
+.formWrapper {
+  width    : 100%;
+  animation: fadeUp 0.25s ease both;
+}
+
+.back {
+  font-family   : $font-body;
+  font-size     : 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color         : var(--gold);
+  text-decoration: none;
+  border        : 1px solid var(--card-border);
+  background    : var(--card-bg);
+  padding       : 0.55rem 1.6rem;
+  border-radius : 100px;
+  backdrop-filter: blur(8px);
+  transition    : transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform : translateY(-2px);
+    box-shadow: 0 8px 24px oklch(5% 0.04 10 / 0.3);
+  }
+}
+
+// ── PIN overlay ───────────────────────────────────────────
+.pinOverlay {
+  position        : fixed;
+  inset           : 0;
+  z-index         : 200;
+  background      : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+}
+
+.pinBox {
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  gap            : 2rem;
+  padding        : 3rem 3.5rem;
+  background     : var(--card-bg);
+  backdrop-filter: blur(16px);
+  border         : 1px solid var(--card-border);
+  border-radius  : 28px;
+  box-shadow     : 0 8px 40px oklch(5% 0.04 10 / 0.4);
+  text-align     : center;
+  animation      : fadeUp 0.4s ease both;
+}
+
+.pinTitle {
+  font-family: $font-serif;
+  font-style : italic;
+  font-weight: 300;
+  font-size  : clamp(1.6rem, 4vw, 2.2rem);
+  color      : var(--gold-pale);
+  margin     : 0;
+}
+
+.pinSubtitle {
+  font-family   : $font-body;
+  font-weight   : 300;
+  font-size     : 0.9rem;
+  color         : var(--text-dim);
+  margin        : -1rem 0 0;
+  letter-spacing: 0.06em;
+}
+
+.pinInputs {
+  display: flex;
+  gap    : 12px;
+}
+
+.pinDigit {
+  width        : 56px;
+  height       : 68px;
+  border-radius: 14px;
+  border       : 1.5px solid var(--card-border);
+  background   : var(--card-bg);
+  color        : var(--cream);
+  font-family  : 'Courier New', Courier, monospace;
+  font-size    : 2rem;
+  font-weight  : 600;
+  text-align   : center;
+  caret-color  : var(--gold);
+  outline      : none;
+  transition   : border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: var(--gold);
+    box-shadow  : 0 0 0 3px oklch(72% 0.14 75 / 0.2);
+  }
+}
+
+.pinError {
+  font-family: $font-body;
+  font-size  : 0.88rem;
+  color      : var(--gold);
+  margin     : -0.5rem 0 0;
+  min-height : 1.2em;
+}
+
+.pinSubmit {
+  background    : linear-gradient(135deg, var(--gold), var(--gold-pale));
+  color         : #1a0508;
+  border        : none;
+  border-radius : 100px;
+  padding       : 0.7rem 2.4rem;
+  font-family   : $font-body;
+  font-size     : 0.95rem;
+  font-weight   : 500;
+  letter-spacing: 0.08em;
+  cursor        : pointer;
+  box-shadow    : 0 4px 16px oklch(72% 0.14 75 / 0.25);
+  transition    : opacity 0.15s, transform 0.1s;
+
+  &:hover    { opacity: 0.88; }
+  &:active   { transform: scale(0.97); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ── Animations ────────────────────────────────────────────
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Responsive ────────────────────────────────────────────
+@media (max-width: 768px) {
+  .page     { padding: 3.5rem 1.5rem 3rem; }
+  .section  { padding: 24px 20px; }
+  .threeCol { grid-template-columns: 1fr; }
+  .twoCol   { grid-template-columns: 1fr; }
+  .pinBox   { padding: 2rem 1.6rem; }
+  .pinDigit { width: 48px; height: 60px; font-size: 1.6rem; }
+}
+
+@media (max-width: 480px) {
+  .page { padding: 3rem 1.2rem 2.5rem; }
+}

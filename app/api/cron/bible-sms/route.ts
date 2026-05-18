@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   await client.messages.create({
     body,
     from: process.env.TWILIO_FROM_NUMBER!,
-    to: process.env.RECIPIENT_PHONE!,
+    to  : process.env.RECIPIENT_PHONE!,
   });
 
   return Response.json({ success: true, reference: verse.reference });
