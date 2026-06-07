@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SunflowerField } from '@/components/sunflower-field';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { PinGate, PIN_KEY } from '@/components/pin-gate';
 import styles from './videos.module.scss';
 
 interface VideoSummary {
@@ -21,15 +22,37 @@ function formatDuration(secs: number): string {
 }
 
 export default function VideosPage() {
-  const [videos, setVideos] = useState<VideoSummary[]>([]);
+  const [pin,     setPin]     = useState<string | null>(null);
+  const [videos,  setVideos]  = useState<VideoSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Restore PIN from session if previously unlocked
   useEffect(() => {
-    fetch('/api/videos')
-      .then(r => r.json())
+    const saved = sessionStorage.getItem(PIN_KEY);
+    if (saved) setPin(saved);
+    else setLoading(false);
+  }, []);
+
+  // Fetch videos once PIN is known
+  useEffect(() => {
+    if (!pin) return;
+    setLoading(true);
+    fetch(`/api/videos?pin=${encodeURIComponent(pin)}`)
+      .then(r => {
+        if (r.status === 401) {
+          sessionStorage.removeItem(PIN_KEY);
+          setPin(null);
+          return [];
+        }
+        return r.json();
+      })
       .then(data => { setVideos(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
+  }, [pin]);
+
+  if (!pin) {
+    return <PinGate title="Videos" onUnlock={setPin} />;
+  }
 
   return (
     <div className={styles.scene}>
@@ -55,7 +78,7 @@ export default function VideosPage() {
             ))
           ) : videos.length === 0 ? (
             <div className={styles.empty}>
-              <p>No videos yet.</p>
+              <p>Nothing to see here. Talk to Rahul to see wassup.</p>
             </div>
           ) : (
             videos.map(v => (

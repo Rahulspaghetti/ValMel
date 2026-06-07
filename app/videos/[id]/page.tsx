@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { SunflowerField } from '@/components/sunflower-field';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { VideoPlayer } from '@/components/video-player';
+import { PinGate, PIN_KEY } from '@/components/pin-gate';
 import styles from './player.module.scss';
 
 interface Subtitle {
@@ -27,19 +28,41 @@ interface VideoFull {
 
 export default function VideoPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const [pin,     setPin]     = useState<string | null>(null);
   const [video,   setVideo]   = useState<VideoFull | null>(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState('');
 
   useEffect(() => {
-    fetch(`/api/videos/${id}`)
-      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    const saved = sessionStorage.getItem(PIN_KEY);
+    if (saved) setPin(saved);
+    else setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!pin) return;
+    setLoading(true);
+    fetch(`/api/videos/${id}?pin=${encodeURIComponent(pin)}`)
+      .then(r => {
+        if (r.status === 401) {
+          sessionStorage.removeItem(PIN_KEY);
+          setPin(null);
+          return Promise.reject('unauthorized');
+        }
+        if (!r.ok) return Promise.reject(r.status);
+        return r.json();
+      })
       .then((data: VideoFull) => { setVideo(data); setLoading(false); })
       .catch(status => {
+        if (status === 'unauthorized') return;
         setError(status === 404 ? 'Video not found.' : 'Failed to load video.');
         setLoading(false);
       });
-  }, [id]);
+  }, [id, pin]);
+
+  if (!pin) {
+    return <PinGate title="Videos" onUnlock={setPin} />;
+  }
 
   return (
     <div className={styles.scene}>
@@ -55,7 +78,7 @@ export default function VideoPage({ params }: { params: Promise<{ id: string }> 
         {video && (
           <div className={styles.content}>
             <h1 className={styles.title}>{video.title}</h1>
-            <VideoPlayer video={video} />
+            <VideoPlayer video={video} pin={pin} />
             {video.description && (
               <p className={styles.description}>{video.description}</p>
             )}

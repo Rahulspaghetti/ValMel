@@ -6,6 +6,8 @@ import remarkGfm from 'remark-gfm';
 import styles from './agent.module.scss';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { SunflowerField } from '@/components/sunflower-field';
+import { PinGate, PIN_KEY } from '@/components/pin-gate';
+import { AnalyzePanel } from './analyze-panel';
 
 // ------------------------------------------------------------------ types
 
@@ -49,76 +51,9 @@ const ACCEPTED_TYPES = [
   '.csv', '.xml', '.html', '.css', '.scss',
 ].join(',');
 
-const PIN_KEY = 'meli_pin';
-
-// ------------------------------------------------------------------ PinGate
-
-function PinGate({ onUnlock }: { onUnlock: (pin: string) => void }) {
-  const [digits, setDigits] = useState(['', '', '', '']);
-  const [error,  setError]  = useState('');
-  const ref0 = useRef<HTMLInputElement>(null);
-  const ref1 = useRef<HTMLInputElement>(null);
-  const ref2 = useRef<HTMLInputElement>(null);
-  const ref3 = useRef<HTMLInputElement>(null);
-  const refs = [ref0, ref1, ref2, ref3];
-
-  useEffect(() => { ref0.current?.focus(); }, []);
-
-  function handleDigit(idx: number, val: string) {
-    if (!/^\d?$/.test(val)) return;
-    const next = [...digits];
-    next[idx] = val.slice(-1);
-    setDigits(next);
-    setError('');
-    if (val && idx < 3) refs[idx + 1].current?.focus();
-  }
-
-  function handleKeyDown(idx: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace' && !digits[idx] && idx > 0) {
-      refs[idx - 1].current?.focus();
-    }
-    if (e.key === 'Enter') submit(digits);
-  }
-
-  function submit(d = digits) {
-    const pin = d.join('');
-    if (pin.length < 4) { setError('Enter all 4 digits'); return; }
-    sessionStorage.setItem(PIN_KEY, pin);
-    onUnlock(pin);
-  }
-
-  return (
-    <div className={styles.pinOverlay}>
-      <div className={styles.pinBox}>
-        <p className={styles.pinTitle}>MeliBoo Law</p>
-        <p className={styles.pinSubtitle}>Enter your 4-digit PIN to continue</p>
-        <div className={styles.pinInputs}>
-          {digits.map((d, i) => (
-            <input
-              key={i}
-              ref={refs[i]}
-              className={styles.pinDigit}
-              type="password"
-              inputMode="numeric"
-              maxLength={1}
-              value={d}
-              onChange={e => handleDigit(i, e.target.value)}
-              onKeyDown={e => handleKeyDown(i, e)}
-            />
-          ))}
-        </div>
-        {error && <p className={styles.pinError}>{error}</p>}
-        <button
-          className={styles.pinSubmit}
-          onClick={() => submit()}
-          disabled={digits.join('').length < 4}
-        >
-          Unlock
-        </button>
-      </div>
-    </div>
-  );
-}
+// Agent accepts any 4-digit PIN (creates new sessions on first agent request).
+// Skips /api/auth/pin existence check used by video pages.
+const acceptAnyPin = async () => true;
 
 // ------------------------------------------------------------------ component
 
@@ -133,6 +68,7 @@ export default function AgentPage() {
   const [pastSessions, setPastSessions] = useState<PastSession[]>([]);
   const [sidebarOpen,       setSidebarOpen]       = useState(false);
   const [sidebarCollapsed,  setSidebarCollapsed]  = useState(false);
+  const [activeTab,         setActiveTab]         = useState<'chat' | 'analyze'>('chat');
 
   const fileInputRef   = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -238,7 +174,7 @@ export default function AgentPage() {
   return (
     <div className={styles.shell}>
 
-      {!pin && <PinGate onUnlock={setPin} />}
+      {!pin && <PinGate title="MeliBoo Law" onUnlock={setPin} validate={acceptAnyPin} />}
 
       <SunflowerField />
 
@@ -335,6 +271,23 @@ export default function AgentPage() {
           </div>
         </div>
 
+        <div className={styles.tabBar}>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${activeTab === 'chat' ? styles.tabBtnActive : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >Chat</button>
+          <button
+            type="button"
+            className={`${styles.tabBtn} ${activeTab === 'analyze' ? styles.tabBtnActive : ''}`}
+            onClick={() => setActiveTab('analyze')}
+          >Analyze</button>
+        </div>
+
+        {activeTab === 'analyze' && <AnalyzePanel pin={pin} />}
+
+        {activeTab === 'chat' && (
+        <>
         <div className={styles.messages}>
           {history.length === 0 && !loading && (
             <div className={styles.emptyState}>
@@ -440,6 +393,8 @@ export default function AgentPage() {
             </div>
           </div>
         </form>
+        </>
+        )}
 
       </main>
     </div>

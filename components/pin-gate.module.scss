@@ -1,0 +1,108 @@
+$font-serif: var(--font-cormorant), 'Cormorant Garamond', serif;
+$font-body:  var(--font-dm-sans), 'DM Sans', sans-serif;
+
+.overlay {
+  position        : fixed;
+  inset           : 0;
+  z-index         : 200;
+  background      : linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+}
+
+.box {
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  gap            : 2rem;
+  padding        : 3rem 3.5rem;
+  background     : var(--card-bg);
+  backdrop-filter: blur(16px);
+  border         : 1px solid var(--card-border);
+  border-radius  : 28px;
+  box-shadow     : 0 8px 40px oklch(5% 0.04 10 / 0.4);
+  text-align     : center;
+  animation      : fadeUp 0.4s ease both;
+}
+
+.title {
+  font-family: $font-serif;
+  font-style : italic;
+  font-weight: 300;
+  font-size  : clamp(1.6rem, 4vw, 2.2rem);
+  color      : var(--gold-pale);
+  margin     : 0;
+}
+
+.subtitle {
+  font-family   : $font-body;
+  font-weight   : 300;
+  font-size     : 0.9rem;
+  color         : var(--text-dim);
+  margin        : -1rem 0 0;
+  letter-spacing: 0.06em;
+}
+
+.inputs {
+  display: flex;
+  gap    : 12px;
+}
+
+.digit {
+  width        : 56px;
+  height       : 68px;
+  border-radius: 14px;
+  border       : 1.5px solid var(--card-border);
+  background   : var(--card-bg);
+  color        : var(--cream);
+  font-family  : 'Courier New', Courier, monospace;
+  font-size    : 2rem;
+  font-weight  : 600;
+  text-align   : center;
+  caret-color  : var(--gold);
+  outline      : none;
+  transition   : border-color 0.15s, box-shadow 0.15s;
+
+  &:focus {
+    border-color: var(--gold);
+    box-shadow  : 0 0 0 3px oklch(72% 0.14 75 / 0.2);
+  }
+}
+
+.error {
+  font-family: $font-body;
+  font-size  : 0.88rem;
+  color      : var(--gold);
+  margin     : -0.5rem 0 0;
+  min-height : 1.2em;
+}
+
+.submit {
+  background    : linear-gradient(135deg, var(--gold), var(--gold-pale));
+  color         : #1a0508;
+  border        : none;
+  border-radius : 100px;
+  padding       : 0.7rem 2.4rem;
+  font-family   : $font-body;
+  font-size     : 0.95rem;
+  font-weight   : 500;
+  letter-spacing: 0.08em;
+  cursor        : pointer;
+  box-shadow    : 0 4px 16px oklch(72% 0.14 75 / 0.25);
+  transition    : opacity 0.15s, transform 0.1s;
+
+  &:hover    { opacity: 0.88; }
+  &:active   { transform: scale(0.97); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .box   { padding: 2rem 1.6rem; }
+  .digit { width: 48px; height: 60px; font-size: 1.6rem; }
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query, ensureTables } from '@/lib/db';
+import { query, ensureTables, isValidPin, MASTER_PIN } from '@/lib/db';
 
 interface VideoFull {
   id: number;
@@ -15,12 +15,17 @@ interface VideoFull {
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const vid = parseInt(id, 10);
   if (isNaN(vid)) return NextResponse.json({ error: 'Invalid id.' }, { status: 400 });
+
+  const pin = new URL(req.url).searchParams.get('pin');
+  if (!(await isValidPin(pin))) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
 
   try {
     await ensureTables();
@@ -73,7 +78,7 @@ export async function PUT(
     const body = await req.json();
     const { pin, title, description, thumbnail_url, url_360p, url_720p, url_1080p, duration } = body;
 
-    if (pin !== '8548') return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    if (pin !== MASTER_PIN) return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
     if (!title?.trim()) return NextResponse.json({ error: 'Title required.' }, { status: 400 });
 
     const [row] = await query<{ id: number; title: string; thumbnail_url: string | null; duration: number | null; created_at: string }>(

@@ -4,10 +4,11 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { SunflowerField } from '@/components/sunflower-field';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { PinGate, PIN_KEY } from '@/components/pin-gate';
 import styles from './admin.module.scss';
 
-const PIN_KEY = 'meli_pin';
-const MASTER  = '8548';
+const MASTER = '8548';
+const onlyMaster = async (pin: string) => pin === MASTER;
 
 interface VideoSummary {
   id: number;
@@ -33,63 +34,6 @@ interface EditState {
   url720: string;
   url1080: string;
   duration: string;
-}
-
-// ── PinGate ──────────────────────────────────────────────
-
-function PinGate({ onUnlock }: { onUnlock: (pin: string) => void }) {
-  const [digits, setDigits] = useState(['', '', '', '']);
-  const [error,  setError]  = useState('');
-  const refs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-  ];
-
-  useEffect(() => { refs[0].current?.focus(); }, []);
-
-  function handleDigit(idx: number, val: string) {
-    if (!/^\d?$/.test(val)) return;
-    const next = [...digits];
-    next[idx] = val.slice(-1);
-    setDigits(next);
-    setError('');
-    if (val && idx < 3) refs[idx + 1].current?.focus();
-  }
-
-  function handleKeyDown(idx: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Backspace' && !digits[idx] && idx > 0) refs[idx - 1].current?.focus();
-    if (e.key === 'Enter') submit(digits);
-  }
-
-  function submit(d = digits) {
-    const pin = d.join('');
-    if (pin.length < 4) { setError('Enter all 4 digits'); return; }
-    if (pin !== MASTER)  { setError('Incorrect PIN'); return; }
-    sessionStorage.setItem(PIN_KEY, pin);
-    onUnlock(pin);
-  }
-
-  return (
-    <div className={styles.pinOverlay}>
-      <div className={styles.pinBox}>
-        <p className={styles.pinTitle}>Video Admin</p>
-        <p className={styles.pinSubtitle}>Enter master PIN to continue</p>
-        <div className={styles.pinInputs}>
-          {digits.map((d, i) => (
-            <input key={i} ref={refs[i]} className={styles.pinDigit}
-              type="password" inputMode="numeric" maxLength={1} value={d}
-              onChange={e => handleDigit(i, e.target.value)}
-              onKeyDown={e => handleKeyDown(i, e)} />
-          ))}
-        </div>
-        {error && <p className={styles.pinError}>{error}</p>}
-        <button className={styles.pinSubmit} onClick={() => submit()}
-          disabled={digits.join('').length < 4}>Unlock</button>
-      </div>
-    </div>
-  );
 }
 
 // ── Section wrapper ───────────────────────────────────────
@@ -318,7 +262,7 @@ export default function VideoAdminPage() {
     flash('Video deleted.');
   }
 
-  if (!pin) return <PinGate onUnlock={setPin} />;
+  if (!pin) return <PinGate title="Video Admin" subtitle="Enter master PIN to continue" onUnlock={setPin} validate={onlyMaster} />;
 
   return (
     <div className={styles.scene}>

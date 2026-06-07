@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query, ensureTables } from '@/lib/db';
+import { query, ensureTables, isValidPin, MASTER_PIN } from '@/lib/db';
 
 interface SubtitleContent {
   content: string;
 }
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const sid = parseInt(id, 10);
   if (isNaN(sid)) return NextResponse.json({ error: 'Invalid id.' }, { status: 400 });
+
+  const pin = new URL(req.url).searchParams.get('pin');
+  if (!(await isValidPin(pin))) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
 
   try {
     await ensureTables();
@@ -39,7 +44,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const pin = new URL(req.url).searchParams.get('pin');
-  if (pin !== '8548') return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  if (pin !== MASTER_PIN) return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
 
   const sid = parseInt(id, 10);
   if (isNaN(sid)) return NextResponse.json({ error: 'Invalid id.' }, { status: 400 });

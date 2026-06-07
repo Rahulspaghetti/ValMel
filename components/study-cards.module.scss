@@ -1,0 +1,161 @@
+$font-serif: var(--font-cormorant), 'Cormorant Garamond', serif;
+$font-body:  var(--font-dm-sans), 'DM Sans', sans-serif;
+
+.grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap                  : 18px;
+  width                : 100%;
+}
+
+.card {
+  background     : var(--card-bg);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border         : 1px solid var(--card-border);
+  border-radius  : 18px;
+  padding        : 24px 24px;
+  display        : flex;
+  flex-direction : column;
+  gap            : 12px;
+  position       : relative;
+  overflow       : hidden;
+  box-shadow     :
+    0 8px 40px oklch(5% 0.04 10 / 0.3),
+    inset 0 1px 0 oklch(72% 0.14 75 / 0.1);
+  animation      : fadeUp 0.5s ease both;
+
+  &::before {
+    content   : '';
+    position  : absolute;
+    top       : 0;
+    left      : 0;
+    right     : 0;
+    height    : 1px;
+    background : linear-gradient(90deg, transparent, var(--gold-pale), transparent);
+    opacity   : 0.4;
+  }
+
+  // span full width for the lead citation/summary cards
+  &.wide { grid-column: 1 / -1; }
+}
+
+.label {
+  font-family   : $font-body;
+  font-size     : 0.6rem;
+  font-weight   : 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color         : var(--gold);
+  opacity       : 0.85;
+  margin        : 0;
+  display       : flex;
+  align-items   : center;
+  gap           : 8px;
+}
+
+.glyph {
+  font-size  : 1rem;
+  line-height: 1;
+  filter     : drop-shadow(0 2px 6px oklch(72% 0.14 75 / 0.4));
+}
+
+.title {
+  font-family: $font-serif;
+  font-style : italic;
+  font-weight: 400;
+  font-size  : 1.5rem;
+  line-height: 1.3;
+  color      : var(--gold-pale);
+  margin     : 0;
+}
+
+.summary {
+  font-family: $font-body;
+  font-size  : 0.92rem;
+  line-height: 1.65;
+  color      : var(--cream);
+  margin     : 0;
+}
+
+.metaRows {
+  display       : flex;
+  flex-direction: column;
+  gap           : 8px;
+}
+
+.metaRow {
+  display       : flex;
+  justify-content: space-between;
+  align-items   : baseline;
+  gap           : 16px;
+  font-family   : $font-body;
+  font-size     : 0.82rem;
+  border-bottom : 1px solid oklch(72% 0.14 75 / 0.1);
+  padding-bottom: 6px;
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+}
+
+.metaKey {
+  color         : var(--text-dim);
+  letter-spacing: 0.04em;
+  flex-shrink   : 0;
+}
+
+.metaVal {
+  color     : var(--cream);
+  text-align: right;
+  font-weight: 400;
+}
+
+.list {
+  margin     : 0;
+  padding-left: 1.1rem;
+  display    : flex;
+  flex-direction: column;
+  gap        : 8px;
+
+  li {
+    font-family: $font-body;
+    font-size  : 0.88rem;
+    line-height: 1.55;
+    color      : var(--cream);
+
+    &::marker { color: var(--gold); }
+  }
+}
+
+.terms {
+  display       : flex;
+  flex-direction: column;
+  gap           : 12px;
+}
+
+.term {
+  display       : flex;
+  flex-direction: column;
+  gap           : 3px;
+}
+
+.termName {
+  font-family: $font-serif;
+  font-style : italic;
+  font-size  : 1.05rem;
+  color      : var(--gold-pale);
+}
+
+.termDef {
+  font-family: $font-body;
+  font-size  : 0.83rem;
+  line-height: 1.5;
+  color      : var(--text-dim);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+}

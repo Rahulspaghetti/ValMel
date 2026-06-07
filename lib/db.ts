@@ -16,6 +16,19 @@ export async function query<T = Record<string, unknown>>(
   return res.rows as T[];
 }
 
+export const MASTER_PIN = '8548';
+
+export async function isValidPin(pin: string | null | undefined): Promise<boolean> {
+  if (!pin) return false;
+  if (pin === MASTER_PIN) return true;
+  await ensureTables();
+  const rows = await query<{ ok: number }>(
+    `SELECT 1 AS ok FROM sessions WHERE pin_code = $1 LIMIT 1`,
+    [pin],
+  );
+  return rows.length > 0;
+}
+
 let tablesReady = false;
 
 export async function ensureTables(): Promise<void> {
@@ -90,6 +103,20 @@ export async function ensureTables(): Promise<void> {
   `);
   await pool.query(`
     CREATE INDEX IF NOT EXISTS subtitles_video_idx ON subtitles(video_id)
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS analyses (
+      id          SERIAL PRIMARY KEY,
+      pin_code    TEXT,
+      source_type TEXT,
+      source_ref  TEXT,
+      title       TEXT,
+      data        JSONB NOT NULL,
+      created_at  TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS analyses_pin_idx ON analyses(pin_code)
   `);
   tablesReady = true;
 }

@@ -26,7 +26,7 @@ interface Quality {
   url: string;
 }
 
-export function VideoPlayer({ video }: { video: VideoData }) {
+export function VideoPlayer({ video, pin }: { video: VideoData; pin?: string }) {
   const videoRef    = useRef<HTMLVideoElement>(null);
   const pendingSeek = useRef(0);
   const wasPlaying  = useRef(false);
@@ -131,7 +131,7 @@ export function VideoPlayer({ video }: { video: VideoData }) {
             kind="subtitles"
             srcLang={s.language}
             label={s.label}
-            src={`/api/subtitles/${s.id}`}
+            src={pin ? `/api/subtitles/${s.id}?pin=${encodeURIComponent(pin)}` : `/api/subtitles/${s.id}`}
             default={s.language === 'en'}
           />
         ))}
