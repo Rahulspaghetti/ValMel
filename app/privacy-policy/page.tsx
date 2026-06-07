@@ -66,8 +66,8 @@ export default function PrivacyPolicy() {
 
         <Section title="Third-party services">
           The weather feature calls the OpenWeatherMap API with your coordinates. The Bible verse
-          uses a public scripture API. The Spotify widget, if connected, uses Spotify&rsquo;s own
-          OAuth flow — we store only the access token in your browser session.
+          uses a public scripture API. Background music plays from a static audio file served by
+          the site — no third-party music service is involved.
         </Section>
 
         <Section title="Cookies &amp; storage">

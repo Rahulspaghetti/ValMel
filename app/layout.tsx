@@ -3,7 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
 import './globals.scss';
 import './tailwind.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import { SpotifyWidget } from '@/components/spotify-widget';
+import { MusicPlayer } from '@/components/music-player';
 
 const cormorant = Cormorant_Garamond({
   subsets : ['latin'],
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             alignItems    : 'flex-start',
             gap           : '0.6rem',
           }}>
-            <SpotifyWidget />
+            <MusicPlayer />
           </div>
         </ThemeProvider>
       </body>

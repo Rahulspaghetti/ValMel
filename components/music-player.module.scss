@@ -1,0 +1,36 @@
+$font-body: var(--font-dm-sans), 'DM Sans', sans-serif;
+
+.btn {
+  width          : 48px;
+  height         : 48px;
+  border-radius  : 50%;
+  border         : 1px solid var(--card-border);
+  background     : var(--card-bg);
+  backdrop-filter: blur(12px) saturate(1.4);
+  color          : var(--gold);
+  font-size      : 1.3rem;
+  line-height    : 1;
+  cursor         : pointer;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  box-shadow     : 0 6px 24px oklch(5% 0.04 10 / 0.35);
+  transition     : transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    transform : translateY(-2px) scale(1.05);
+    box-shadow: 0 10px 32px oklch(5% 0.04 10 / 0.45), 0 0 24px oklch(72% 0.14 75 / 0.15);
+    color     : var(--gold-pale);
+  }
+
+  &:active { transform: scale(0.96); }
+}
+
+.playing {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 6px 24px oklch(5% 0.04 10 / 0.35); }
+  50%      { box-shadow: 0 6px 24px oklch(5% 0.04 10 / 0.35), 0 0 22px oklch(72% 0.14 75 / 0.3); }
+}
